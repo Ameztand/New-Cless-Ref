@@ -1,20 +1,34 @@
 #include "logic.h"
 
-#include "sysCommand.h"
+
+#include "msgBoard.h"
+#include "renderBorad.h"
 
 void Logic::onEnter()
 {
-	msg.initMsg();
 	gameSta.initGameSta(ctx);
 }
 
-void Logic::tick(SysCommand& sysCommand)
+void Logic::tick(MsgData& msgData)
 {
-	msg.GetMsg(msgData);
-	translateMsg(sysCommand);
+	translateMsg(msgData);
+	if (intend.isExit)intend.isPause = gameSta.popSta(ctx);
+	if (!intend.isPause) {
+
+	}
 }
 
-void Logic::translateMsg(SysCommand& sysCommand)
+void Logic::translateMsg(MsgData& msgData)
 {
-	sysCommand.setExit(msgData.getEsc(1));
+	intend.isExit = msgData.getEsc(1);
+}
+
+bool Logic::Exit()
+{
+	return gameSta.empty();
+}
+
+void Logic::pushRender(RenderState& renderSta)
+{
+	renderSta.isLobby = flag.isLobby;
 }

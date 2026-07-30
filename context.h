@@ -1,9 +1,11 @@
 #pragma once
 
 class Data;
-class Intend;
+struct Intend;
+struct Flag;
 
 struct GameCtx {
 	Data& data;
 	Intend& intend;
+	Flag& flag;
 };

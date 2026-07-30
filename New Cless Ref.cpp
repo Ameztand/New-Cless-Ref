@@ -2,18 +2,29 @@
 
 #include <easyx.h>
 
+#include "msg.h"
+#include "render.h"
+#include "renderBorad.h"
 #include "logic.h"
-#include "sysCommand.h"
+
 
 #pragma comment(lib, "winmm.lib")   //提高定时器精度
+
+
 
 int main()
 {
 	timeBeginPeriod(1);  // // 提高定时器精度,全局设置，程序结束时记得 timeEndPeriod(1)
 
-	Logic logic;
-	SysCommand sysCommand;
+	Msg msg;
+	MsgData msgData;
 
+	Renderer render;
+	RenderState renderSta;
+
+	Logic logic;
+
+	msg.initMsg();
 	logic.onEnter();
 
 
@@ -26,12 +37,15 @@ int main()
 	setbkmode(OPAQUE);//TRANSPARENT
 
 	while (true) {
-		if (sysCommand.getExit())break;
-		sysCommand.clear();
+		if (logic.Exit())break;
+		//sysCommand.clear();
 
-		logic.tick(sysCommand);
+		msg.GetMsg(msgData);
+		logic.tick(msgData);
 
-		
+		logic.pushRender(renderSta);
+		render.render(renderSta);
+
 		Sleep(10);
 	}
 

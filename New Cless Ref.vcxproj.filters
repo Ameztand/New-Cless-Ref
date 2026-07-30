@@ -39,10 +39,10 @@
     <ClCompile Include="gameStateMachine.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="sysCommand.cpp">
+    <ClCompile Include="gameState.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="gameState.cpp">
+    <ClCompile Include="render.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -65,13 +65,16 @@
     <ClInclude Include="gameBoard.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="sysCommand.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="context.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="gameState.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="render.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="renderBorad.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

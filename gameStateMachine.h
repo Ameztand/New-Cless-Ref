@@ -17,8 +17,8 @@ public:
     // 压栈
     void pushSta(GameCtx& ctx, std::unique_ptr<IGameState> newState);
 
-    //弹出
-    void popSta(GameCtx& ctx);
+    //弹出，返回true就是空
+    bool popSta(GameCtx& ctx);
 
     //替换
     void changeSta(GameCtx& ctx, std::unique_ptr<IGameState> newState);

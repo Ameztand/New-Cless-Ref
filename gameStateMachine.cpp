@@ -9,11 +9,15 @@ void State::pushSta(GameCtx& ctx, std::unique_ptr<IGameState> newState) {
     }
 }
 
-void State::popSta(GameCtx& ctx) {
-    if (!stack.empty()) {
-        stack.top()->onExit(ctx);          // 自动调用具体状态的 onExit
-        stack.pop();
+bool State::popSta(GameCtx& ctx) {
+    if (stack.empty()) {
+        return true;
     }
+
+    stack.top()->onExit(ctx);          // 自动调用具体状态的 onExit
+    stack.pop();
+
+    return stack.empty();
 }
 
 void State::changeSta(GameCtx& ctx, std::unique_ptr<IGameState> newState) {

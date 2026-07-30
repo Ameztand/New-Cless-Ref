@@ -1,7 +1,11 @@
 #include "gameState.h"
 
+#include "gameBoard.h"
+
 void Lobby::onEnter(GameCtx& ctx)
 {
+    ctx.flag.isLobby = true;
+
     /*
     data.initKeySta();
     data.initMouseSta();
@@ -12,6 +16,8 @@ void Lobby::onEnter(GameCtx& ctx)
     data.setIntendPipeLine_renderLobby(true);
     data.staIDPush(ID);
     */
+
+
 }
 
 void Lobby::onExit(GameCtx& ctx) {

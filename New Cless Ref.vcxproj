@@ -132,7 +132,7 @@
     <ClCompile Include="msg.cpp" />
     <ClCompile Include="msgBoard.cpp" />
     <ClCompile Include="New Cless Ref.cpp" />
-    <ClCompile Include="sysCommand.cpp" />
+    <ClCompile Include="render.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />
@@ -143,7 +143,8 @@
     <ClInclude Include="logic.h" />
     <ClInclude Include="msg.h" />
     <ClInclude Include="msgBoard.h" />
-    <ClInclude Include="sysCommand.h" />
+    <ClInclude Include="render.h" />
+    <ClInclude Include="renderBorad.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

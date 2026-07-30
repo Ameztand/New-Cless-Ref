@@ -16,10 +16,10 @@ private:
 	friend class Msg;
 
 public:
-	const bool& getEsc(const int len)const;
-	const bool& getF1(const int len)const;
-	const bool& getMouseF()const;
+	const bool getEsc(const int len)const;
+	const bool getF1(const int len)const;
+	const bool getMouseF()const;
 	const Position& getMousePos()const;
 
-	void reset();
+	void clear();
 };
