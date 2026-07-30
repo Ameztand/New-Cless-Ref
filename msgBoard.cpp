@@ -21,8 +21,8 @@ const Position& MsgData::getMousePos() const
 }
 
 void MsgData::reset() {
-	Esc.reset();
-	F1.reset();
+	Esc.clear();
+	F1.clear();
 
 	isMouseF = false;
 	MousePos = Epos;

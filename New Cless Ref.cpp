@@ -2,8 +2,8 @@
 
 #include <easyx.h>
 
-#include "msg.h"
-#include "msgBoard.h"
+#include "logic.h"
+#include "sysCommand.h"
 
 #pragma comment(lib, "winmm.lib")   //提高定时器精度
 
@@ -11,10 +11,11 @@ int main()
 {
 	timeBeginPeriod(1);  // // 提高定时器精度,全局设置，程序结束时记得 timeEndPeriod(1)
 
-	Msg msg;
-	MsgData msgData;
+	Logic logic;
+	SysCommand sysCommand;
 
-	msg.initMsg();
+	logic.onEnter();
+
 
 	//生成画布
 	initgraph(1080, 720);
@@ -25,11 +26,12 @@ int main()
 	setbkmode(OPAQUE);//TRANSPARENT
 
 	while (true) {
-		msg.GetMsg(msgData);
+		if (sysCommand.getExit())break;
+		sysCommand.clear();
+
+		logic.tick(sysCommand);
 
 		
-		if (msgData.getEsc(1))break;
-
 		Sleep(10);
 	}
 

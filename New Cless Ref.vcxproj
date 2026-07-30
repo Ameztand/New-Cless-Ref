@@ -124,14 +124,26 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="common.cpp" />
+    <ClCompile Include="gameBoard.cpp" />
+    <ClCompile Include="gameState.cpp" />
+    <ClCompile Include="gameStateMachine.cpp" />
+    <ClCompile Include="gameStateMachine.h" />
+    <ClCompile Include="logic.cpp" />
     <ClCompile Include="msg.cpp" />
     <ClCompile Include="msgBoard.cpp" />
     <ClCompile Include="New Cless Ref.cpp" />
+    <ClCompile Include="sysCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />
+    <ClInclude Include="context.h" />
+    <ClInclude Include="gameBoard.h" />
+    <ClInclude Include="gameState.h" />
+    <ClInclude Include="IGameState.h" />
+    <ClInclude Include="logic.h" />
     <ClInclude Include="msg.h" />
     <ClInclude Include="msgBoard.h" />
+    <ClInclude Include="sysCommand.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

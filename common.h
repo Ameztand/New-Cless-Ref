@@ -75,14 +75,14 @@ public:
     //设置
     void set(int index) {
         if (index < 0 || index > 3) return; // 越界保护
-        reset();
+        clear();
         if (index != 0) {
             this->*table[index - 1] = true;
         }
     }
 
     //清空
-    void reset() {
+    void clear() {
         M = S = L = false;
     }
 };
