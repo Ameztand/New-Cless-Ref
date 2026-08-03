@@ -74,7 +74,7 @@
     <ClInclude Include="render.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="renderBorad.h">
+    <ClInclude Include="StateTable.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

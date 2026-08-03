@@ -2,10 +2,10 @@
 
 class Data;
 struct Intend;
-struct Flag;
+struct StateTable;
 
 struct GameCtx {
 	Data& data;
 	Intend& intend;
-	Flag& flag;
+	StateTable& flag;
 };

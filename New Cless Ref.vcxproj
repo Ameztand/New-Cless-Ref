@@ -144,7 +144,7 @@
     <ClInclude Include="msg.h" />
     <ClInclude Include="msgBoard.h" />
     <ClInclude Include="render.h" />
-    <ClInclude Include="renderBorad.h" />
+    <ClInclude Include="StateTable.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

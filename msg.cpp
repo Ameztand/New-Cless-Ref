@@ -7,8 +7,8 @@
 
 void Msg::push(MsgData& msgData)
 {
-    msgData.Esc.set(keySta_[VK_ESCAPE]);
-    msgData.F1.set(keySta_[VK_F1]);
+    msgData.Esc = keySta_[VK_ESCAPE];
+    msgData.F1 = keySta_[VK_F1];
 
     msgData.isMouseF = (mouesDown_.getPressSta() == 0 ? false : true);
     msgData.MousePos = mousePos_;

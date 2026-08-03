@@ -4,7 +4,7 @@
 
 #include "msg.h"
 #include "render.h"
-#include "renderBorad.h"
+#include "StateTable.h"
 #include "logic.h"
 
 
@@ -20,7 +20,7 @@ int main()
 	MsgData msgData;
 
 	Renderer render;
-	RenderState renderSta;
+	StateTable renderSta;
 
 	Logic logic;
 
@@ -44,7 +44,9 @@ int main()
 		logic.tick(msgData);
 
 		logic.pushRender(renderSta);
-		render.render(renderSta);
+		render.render(renderSta, logic.pushCtx());
+
+		logic.clearIntend();
 
 		Sleep(10);
 	}

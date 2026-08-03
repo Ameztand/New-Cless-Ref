@@ -4,7 +4,7 @@
 
 #include "context.h"
 
-class RenderState;
+struct StateTable;
 
 class Renderer {
 private:
@@ -24,7 +24,7 @@ private:
 
 public:
 	//渲染双人
-	void renderPUgame(GameCtx& ctx);
+	void renderPUgame(const GameCtx& ctx);
 
 	//渲染选择难度
 	void renderSelect();
@@ -33,9 +33,9 @@ public:
 	void renderLobby();
 
 	//调试渲染
-	void renderDebug(GameCtx& ctx);
+	void renderDebug(const GameCtx& ctx);
 
-	void render(RenderState& renderSta);
+	void render(const StateTable& renderSta, const GameCtx& ctx);
 
 	//初始化界面
 	void initEasyX();

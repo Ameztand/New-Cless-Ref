@@ -11,6 +11,18 @@ private:
 public:
     void onEnter(GameCtx& ctx)override;
     void onExit(GameCtx& ctx) override;
-    void tick(GameCtx& ctx)override;
+    void tick(GameCtx& ctx, MsgData& msgData)override;
+    int getID() const override;
+};
+
+//Ñ¡ÔñÄÑ¶È
+class Select :public IGameState {
+private:
+    const int ID = STA_SELECT;
+
+public:
+    void onEnter(GameCtx& ctx)override;
+    void onExit(GameCtx& ctx) override;
+    void tick(GameCtx& ctx, MsgData& msgData)override;
     int getID() const override;
 };

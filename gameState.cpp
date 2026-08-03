@@ -1,43 +1,51 @@
 #include "gameState.h"
 
+//#include <memory>
+
+#include "msgBoard.h"
 #include "gameBoard.h"
+#include "StateTable.h"
+
 
 void Lobby::onEnter(GameCtx& ctx)
 {
     ctx.flag.isLobby = true;
-
-    /*
-    data.initKeySta();
-    data.initMouseSta();
-    data.initIntendPipeLine();
-    data.initPieceData();
-    data.initPieceData();
-    data.initCheckedCless();
-    data.setIntendPipeLine_renderLobby(true);
-    data.staIDPush(ID);
-    */
-
-
 }
 
-void Lobby::onExit(GameCtx& ctx) {
-
-}
-
-void Lobby::tick(GameCtx& ctx)
+void Lobby::onExit(GameCtx& ctx)
 {
-    /*
-    data.setIntendPipeLine_renderLobby(true);
+    
+}
 
-    const Position& pos = data.getMousePos();
-    if (data.getMouseSta() == 1 && pos.x >= Sarea.left && pos.x <= Sarea.right && pos.y >= Sarea.top && pos.y <= Sarea.bottom) {
+void Lobby::tick(GameCtx& ctx, MsgData& msgData)
+{
+    const Position& pos = msgData.getMousePos();
+    if (msgData.getMouseF() && pos.x >= Sarea.left && pos.x <= Sarea.right && pos.y >= Sarea.top && pos.y <= Sarea.bottom) {
         //¿ªÊ¼
-        data.setIntendPipeLine_pushSelect(true);
+        ctx.intend.replaceSelect = true;
     }
-    */
 }
 
 int Lobby::getID() const
+{
+    return ID;
+}
+
+void Select::onEnter(GameCtx& ctx)
+{
+    ctx.flag.isSelect = true;
+}
+
+void Select::onExit(GameCtx& ctx)
+{
+    ctx.flag.isSelect = false;
+}
+
+void Select::tick(GameCtx& ctx, MsgData& msgData)
+{
+}
+
+int Select::getID() const
 {
     return ID;
 }

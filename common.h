@@ -49,6 +49,7 @@ struct DoubleBool {
     }
 };
 
+/*
 struct DownMode {
     bool M = false;//刚按
     bool S = false;//短按
@@ -86,6 +87,7 @@ public:
         M = S = L = false;
     }
 };
+*/
 
 //坐标结构体（x, y）
 struct Position {

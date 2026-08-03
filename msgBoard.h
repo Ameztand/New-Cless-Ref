@@ -7,8 +7,8 @@ class Msg;
 class MsgData {
 private:
 	//m瞬间按下 S短按 L长按
-	DownMode Esc = {};
-	DownMode F1 = {};
+	int Esc = 0;
+	int F1 = 0;
 
 	bool isMouseF = false;
 	Position MousePos = Epos;

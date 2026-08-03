@@ -2,18 +2,19 @@
 
 #include "common.h"
 
-struct Flag {
-	bool isLobby = false;
-
-	void clear() {
-		isLobby = false;
-	}
-};
 
 class Data {
 private:
-
+	int StaID = 1;
+	int StaDepth = 1;
 public:
+	const int getStaID()const;
+	void setStaID(const int i);
+
+	const int getStaDepth()const;
+	void setStaDepth(const int i);
+
+	void initData();
 };
 
 
@@ -22,6 +23,14 @@ struct Intend {
 	bool isExit = false;
 	bool isPause = false;
 
+	bool replaceSelect = false;
 
-	void clear();
+	
+
+	void clear() {
+		isExit = false;
+		isPause = false;
+
+		replaceSelect = false;
+	}
 };

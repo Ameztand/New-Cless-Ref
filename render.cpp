@@ -1,8 +1,9 @@
 #include "render.h"
 
-#include "renderBorad.h"
+#include "StateTable.h"
+#include "gameBoard.h"
 
-void Renderer::renderPUgame(GameCtx& ctx)
+void Renderer::renderPUgame(const GameCtx& ctx)
 {
 }
 
@@ -91,14 +92,52 @@ void Renderer::renderLobby()
     //EndBatchDraw();     // 结束批量绘图，一次性显示所有内容
 }
 
-void Renderer::renderDebug(GameCtx& ctx)
+void Renderer::renderDebug(const GameCtx& ctx)
 {
-    
+    setbkmode(OPAQUE);//TRANSPARENT
+
+    //打印调试
+    settextstyle(16, 0, L"宋体");
+    wchar_t buf[256];
+    swprintf(buf, 256, L"栈深：%d 栈顶ID：%d", ctx.data.getStaDepth(), ctx.data.getStaID());
+    outtextxy(10, 10, buf);
+    /*
+    const Position& tempPos1 = data.getMousePos();
+    const Position& tempPos2 = data.getPiecePos();
+    swprintf(buf, 256, L"鼠标坐标：(%d , %d)", tempPos1.x, tempPos1.y);
+    outtextxy(10, 30, buf);
+    const Cell& tempCell = data.getOnePieceData(tempPos2);
+    const bool& tempBool = data.getOneLogicPiece(tempPos2);
+    swprintf(buf, 256, L"鼠标当前格子： ID:%d   pos:(%d , %d)   hasMoved:%d   LogicPiece:%d", tempCell.id, tempCell.pos.x, tempCell.pos.y, tempCell.hasMoved, tempBool);
+    outtextxy(10, 50, buf);
+    const Cell& tempCell2 = data.getCheckedCless()[0];
+    swprintf(buf, 256, L"持有棋子： ID:%d   pos:(%d , %d)   hasMoved:%d", tempCell2.id, tempCell2.pos.x, tempCell2.pos.y, tempCell2.hasMoved);
+    outtextxy(10, 70, buf);
+    const Position& tempPos3 = data.getKingPos(1);
+    const Position& tempPos4 = data.getKingPos(-1);
+    swprintf(buf, 256, L"王的位置： Wpos:(%d , %d)   Bpos:(%d , %d)", tempPos3.x, tempPos3.y, tempPos4.x, tempPos4.y);
+    outtextxy(10, 90, buf);
+    const bool& tempBool2 = data.getKingChecked(1);
+    const bool& tempBool3 = data.getKingChecked(-1);
+    swprintf(buf, 256, L"王的被将军状态： Wpos:%d   Bpos:%d", tempBool2, tempBool3);
+    outtextxy(10, 110, buf);
+    */
+
+    setbkmode(TRANSPARENT);//TRANSPARENT
 }
 
-void Renderer::render(RenderState& renderSta)
+void Renderer::render(const StateTable& renderSta, const GameCtx& ctx)
 {
-    if (renderSta.isLobby)renderLobby();
+    BeginBatchDraw();   // 开始批量绘图（双缓冲）
+    cleardevice();
+
+    //栈式结构
+    if (renderSta.isSelect)renderSelect();
+    else if (renderSta.isLobby)renderLobby();
+
+    if (renderSta.isDebug)renderDebug(ctx);
+
+    EndBatchDraw();     // 结束批量绘图，一次性显示所有内容
 }
 
 void Renderer::initEasyX() {

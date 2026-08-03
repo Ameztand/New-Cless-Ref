@@ -2,12 +2,12 @@
 
 const bool MsgData::getEsc(const int len) const
 {
-	return Esc.get(len);
+	return Esc == len;
 }
 
 const bool MsgData::getF1(const int len) const
 {
-	return F1.get(len);
+	return F1 == len;
 }
 
 const bool MsgData::getMouseF() const
@@ -21,8 +21,8 @@ const Position& MsgData::getMousePos() const
 }
 
 void MsgData::clear() {
-	Esc.clear();
-	F1.clear();
+	Esc = 0;
+	F1 = 0;
 
 	isMouseF = false;
 	MousePos = Epos;
