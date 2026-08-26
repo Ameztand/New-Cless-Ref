@@ -4,7 +4,6 @@
 
 #include "inputLayer.h"
 #include "render.h"
-#include "StateTable.h"
 #include "logic.h"
 
 
@@ -19,7 +18,6 @@ int main()
 	InputLayer inputLayer;
 
 	Renderer render;
-	StateTable renderSta;
 
 	Logic logic;
 
@@ -29,13 +27,11 @@ int main()
 
 	while (true) {
 		if (logic.Exit())break;
-		//sysCommand.clear();
 
 		inputLayer.poll();
 		logic.tick(inputLayer.getMsgData());
 
-		logic.pushRender(renderSta);
-		render.render(renderSta, logic.pushCtx());
+		render.render(logic.pushRender());
 
 		logic.clearIntend();
 

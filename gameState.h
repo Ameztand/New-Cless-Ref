@@ -6,23 +6,23 @@
 //大厅
 class Lobby :public IGameState {
 private:
-    const int ID = STA_LOBBY;
+    const IGameState::GameSta ID= IGameState::GameSta::Lobby;
 
 public:
-    void onEnter(GameCtx& ctx)override;
-    void onExit(GameCtx& ctx) override;
-    void tick(GameCtx& ctx, const IInputLayer::MsgData& out)override;
-    int getID() const override;
+    void onEnter(Data& data)override;
+    void onExit(Data& data) override;
+    void tick(Data& data, const IInputLayer::MsgData& out)override;
+    IGameState::GameSta getID() const override;
 };
 
 //选择难度
 class Select :public IGameState {
 private:
-    const int ID = STA_SELECT;
+    const IGameState::GameSta ID = IGameState::GameSta::Select;
 
 public:
-    void onEnter(GameCtx& ctx)override;
-    void onExit(GameCtx& ctx) override;
-    void tick(GameCtx& ctx, const IInputLayer::MsgData& out)override;
-    int getID() const override;
+    void onEnter(Data& data)override;
+    void onExit(Data& data) override;
+    void tick(Data& data, const IInputLayer::MsgData& out)override;
+    IGameState::GameSta getID() const override;
 };

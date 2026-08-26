@@ -3,48 +3,48 @@
 //#include <memory>
 
 #include "logicStore.h"
-#include "StateTable.h"
+#include "typeRenderData.h"
 
 
-void Lobby::onEnter(GameCtx& ctx)
+void Lobby::onEnter(Data& data)
 {
-    ctx.flag.isLobby = true;
+    //ctx.renderData.isLobby = true;
 }
 
-void Lobby::onExit(GameCtx& ctx)
+void Lobby::onExit(Data& data)
 {
     
 }
 
-void Lobby::tick(GameCtx& ctx, const IInputLayer::MsgData& out)
+void Lobby::tick(Data& data, const IInputLayer::MsgData& out)
 {
     const Position& pos = out.MousePos;
     if (out.isMouseF && pos.x >= Sarea.left && pos.x <= Sarea.right && pos.y >= Sarea.top && pos.y <= Sarea.bottom) {
         //¿ªÊ¼
-        ctx.intend.replaceSelect = true;
+        data.gameIntend.pushSelect = true;
     }
 }
 
-int Lobby::getID() const
+IGameState::GameSta Lobby::getID() const
 {
     return ID;
 }
 
-void Select::onEnter(GameCtx& ctx)
+void Select::onEnter(Data& data)
 {
-    ctx.flag.isSelect = true;
+    //ctx.renderData.isSelect = true;
 }
 
-void Select::onExit(GameCtx& ctx)
+void Select::onExit(Data& data)
 {
-    ctx.flag.isSelect = false;
+    //ctx.renderData.isSelect = false;
 }
 
-void Select::tick(GameCtx& ctx, const IInputLayer::MsgData& out)
+void Select::tick(Data& data, const IInputLayer::MsgData& out)
 {
 }
 
-int Select::getID() const
+IGameState::GameSta Select::getID() const
 {
     return ID;
 }

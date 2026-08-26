@@ -15,13 +15,13 @@ private:
 
 public:
     // 压栈
-    void pushSta(GameCtx& ctx, std::unique_ptr<IGameState> newState);
+    void pushSta(Data& data, std::unique_ptr<IGameState> newState);
 
     //弹出，返回true就是空
-    bool popSta(GameCtx& ctx);
+    bool popSta(Data& data);
 
     //替换
-    void changeSta(GameCtx& ctx, std::unique_ptr<IGameState> newState);
+    void changeSta(Data& data, std::unique_ptr<IGameState> newState);
 
     //获取栈顶对象
     IGameState* getState();
@@ -33,8 +33,8 @@ public:
     int getStaDepth() const;
 
     //获取栈顶id
-    int getStaID()const;
+    IGameState::GameSta getStaID()const;
 
     //初始化
-    void initGameSta(GameCtx& ctx);
+    void initGameSta(Data& data);
 };

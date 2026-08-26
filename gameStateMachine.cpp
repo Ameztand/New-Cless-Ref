@@ -2,31 +2,31 @@
 
 #include "gameState.h"
 
-void State::pushSta(GameCtx& ctx, std::unique_ptr<IGameState> newState) {
+void State::pushSta(Data& data, std::unique_ptr<IGameState> newState) {
     if (newState) {
-        newState->onEnter(ctx);           // 自动调用具体状态的 onEnter
+        newState->onEnter(data);           // 自动调用具体状态的 onEnter
         stack.push(std::move(newState));
     }
 }
 
-bool State::popSta(GameCtx& ctx) {
+bool State::popSta(Data& data) {
     if (stack.empty()) {
         return true;
     }
 
-    stack.top()->onExit(ctx);          // 自动调用具体状态的 onExit
+    stack.top()->onExit(data);          // 自动调用具体状态的 onExit
     stack.pop();
 
     return stack.empty();
 }
 
-void State::changeSta(GameCtx& ctx, std::unique_ptr<IGameState> newState) {
+void State::changeSta(Data& data, std::unique_ptr<IGameState> newState) {
     if (!stack.empty()) {
-        stack.top()->onExit(ctx);          // 自动调用具体状态的 onExit
+        stack.top()->onExit(data);          // 自动调用具体状态的 onExit
         stack.pop();
     }
     if (newState) {
-        newState->onEnter(ctx);           // 自动调用具体状态的 onEnter
+        newState->onEnter(data);           // 自动调用具体状态的 onEnter
         stack.push(std::move(newState));
     }
 }
@@ -44,14 +44,14 @@ int State::getStaDepth() const {
     return (int)stack.size();
 }
 
-int State::getStaID()const {
-    return (stack.empty()) ? 0 : stack.top()->getID();
+IGameState::GameSta State::getStaID()const {
+    return (stack.empty()) ? IGameState::GameSta::null : stack.top()->getID();
 }
 
-void State::initGameSta(GameCtx& ctx)
+void State::initGameSta(Data& data)
 {
     while (!stack.empty()) {
         stack.pop();
     }
-    pushSta(ctx, std::make_unique<Lobby>());
+    pushSta(data, std::make_unique<Lobby>());
 }

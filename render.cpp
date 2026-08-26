@@ -1,9 +1,10 @@
 #include "render.h"
 
-#include "StateTable.h"
+#include "typeRenderData.h"
 #include "logicStore.h"
+#include "IGameState.h"
 
-void Renderer::renderPUgame(const GameCtx& ctx)
+void Renderer::renderPUgame()
 {
 }
 
@@ -92,14 +93,14 @@ void Renderer::renderLobby()
     //EndBatchDraw();     // 结束批量绘图，一次性显示所有内容
 }
 
-void Renderer::renderDebug(const GameCtx& ctx)
+void Renderer::renderDebug()
 {
     setbkmode(OPAQUE);//TRANSPARENT
 
     //打印调试
     settextstyle(16, 0, L"宋体");
     wchar_t buf[256];
-    swprintf(buf, 256, L"栈深：%d 栈顶ID：%d", ctx.data.getStaDepth(), ctx.data.getStaID());
+    swprintf(buf, 256, L"栈深：%d 栈顶ID：%d", renderData.StaDepth, renderData.gameSta);
     outtextxy(10, 10, buf);
     /*
     const Position& tempPos1 = data.getMousePos();
@@ -126,16 +127,25 @@ void Renderer::renderDebug(const GameCtx& ctx)
     setbkmode(TRANSPARENT);//TRANSPARENT
 }
 
-void Renderer::render(const StateTable& renderSta, const GameCtx& ctx)
+void Renderer::render(const RenderData& out)
 {
+    renderData = out;
+
     BeginBatchDraw();   // 开始批量绘图（双缓冲）
     cleardevice();
 
     //栈式结构
-    if (renderSta.isSelect)renderSelect();
-    else if (renderSta.isLobby)renderLobby();
+    using GameSta = IGameState::GameSta;
+    switch (out.gameSta) {
+    case GameSta::Lobby:
+        renderLobby();
+        break;
+    case GameSta::Select:
+        renderSelect();
+        break;
+    }
 
-    if (renderSta.isDebug)renderDebug(ctx);
+    if (out.isDebug)renderDebug();
 
     EndBatchDraw();     // 结束批量绘图，一次性显示所有内容
 }

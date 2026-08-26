@@ -65,16 +65,13 @@
     <ClInclude Include="logicStore.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="context.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="gameState.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="render.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="StateTable.h">
+    <ClInclude Include="typeRenderData.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="IInputLayer.h">

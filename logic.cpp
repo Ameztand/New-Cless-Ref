@@ -7,25 +7,25 @@
 
 void Logic::onEnter()
 {
-	gameSta.initGameSta(ctx);
+	gameSta.initGameSta(data);
 }
 
 void Logic::tick(const IInputLayer::MsgData& out)
 {
-	data.pollMsgData(out);
+	//³õ²½·­ÒëÈ«¾ÖÈÈ¼ü
+	data.pushMsgData(out);
 	translateMsg();
-	if (intend.isExit)intend.isPause = gameSta.popSta(ctx);
-	if (!intend.isPause) {
-		//Õ»¶¥
-		gameSta.getState()->tick(ctx, out);
 
-		//»»Õ»
-		if (intend.replaceSelect) {
-			gameSta.pushSta(ctx, std::make_unique<Select>());
-			updateSta();
-		}
+	//Ö´ÐÐÕ»¶¥
+	gameSta.getState()->tick(data, out);
+
+	//»»Õ»¼ì²é
+	if (data.gameIntend.popSta)gameSta.popSta(data);
+	else if (data.gameIntend.pushSelect) {
+		gameSta.pushSta(data, std::make_unique<Select>());
 	}
 
+	if (data.gameIntend.isEsc)gameSta.popSta(data);
 }
 
 void Logic::translateMsg()
@@ -33,31 +33,31 @@ void Logic::translateMsg()
 	const IInputLayer::MsgData& out = data.getMsgData();
 	using KeySta = IInputLayer::KeySta;
 	
-	intend.isExit = (out.Esc == KeySta::falling);
-
-	flag.isDebug = translateDebug();
+	data.gameIntend.isEsc = (out.Esc == KeySta::falling);
+	translateDebug();
 }
 
-bool Logic::translateDebug()
+void Logic::translateDebug()
 {
 	const IInputLayer::MsgData& out = data.getMsgData();
 	using KeySta = IInputLayer::KeySta;
 
+	bool prve = data.getPrveF1debug();
+	bool purr = false;
+
 	if (out.F1 == KeySta::falling) {
-		flag.isDebug = !flag.isDebug;
-		printf("ÇÐ»»\n");
+		prve = !prve;
+		//printf("µ¥»÷¿ª\n");
 	}
-	else if (out.F1 == KeySta::Ldown) {
-		flag.LDebug = true;
-		printf("3");
+	if (out.F1 == KeySta::Ldown) {
+		prve = false;
+		//printf("µ¥»÷¹Ø\n");
 	}
-	else if (out.F1 == KeySta::rising && flag.LDebug) {
-		flag.LDebug = false;
-		flag.isDebug = !flag.isDebug;
-		printf("4\n");
+	if (!(out.F1 == KeySta::null)) {
+		purr = true;
 	}
 
-	return (flag.isDebug || flag.LDebug);
+	data.pushF1debug((prve || purr), prve);
 }
 
 bool Logic::Exit()
@@ -65,23 +65,18 @@ bool Logic::Exit()
 	return gameSta.empty();
 }
 
-void Logic::pushRender(StateTable& renderSta)
+const RenderData Logic::pushRender()
 {
-	renderSta = flag;
-}
+	RenderData tempRenderData;
 
-const GameCtx& Logic::pushCtx()
-{
-	return ctx;
+	tempRenderData.gameSta = gameSta.getStaID();
+	tempRenderData.StaDepth = gameSta.getStaDepth();
+	tempRenderData.isDebug = data.getF1debug();
+
+	return tempRenderData;
 }
 
 void Logic::clearIntend()
 {
-	intend.clear();
-}
-
-void Logic::updateSta()
-{
-	data.setStaID(gameSta.getStaID());
-	data.setStaDepth(gameSta.getStaID());
+	data.gameIntend = {};
 }

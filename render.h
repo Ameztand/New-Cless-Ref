@@ -2,12 +2,11 @@
 
 #include <easyx.h>
 
-#include "context.h"
-
-struct StateTable;
+#include "typeRenderData.h"
 
 class Renderer {
 private:
+	RenderData renderData = {};
 
 	//颜色数组
 	COLORREF colors[2] = {
@@ -24,7 +23,7 @@ private:
 
 public:
 	//渲染双人
-	void renderPUgame(const GameCtx& ctx);
+	void renderPUgame();
 
 	//渲染选择难度
 	void renderSelect();
@@ -33,9 +32,9 @@ public:
 	void renderLobby();
 
 	//调试渲染
-	void renderDebug(const GameCtx& ctx);
+	void renderDebug();
 
-	void render(const StateTable& renderSta, const GameCtx& ctx);
+	void render(const RenderData& out);
 
 	//初始化界面
 	void initEasyX();

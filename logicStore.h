@@ -3,42 +3,41 @@
 #include "common.h"
 
 #include "IInputLayer.h"
+#include "IGameState.h"
 
-class Data {
-private:
-	int StaID = 1;
-	int StaDepth = 1;
+struct Intend {
+	bool pushSelect = false;
 
-	IInputLayer::MsgData cacheMsgData;
-public:
-	const int getStaID()const;
-	void setStaID(const int i);
+	bool popSta = false;
 
-	const int getStaDepth()const;
-	void setStaDepth(const int i);
-
-	const IInputLayer::MsgData& getMsgData()const;
-	void pollMsgData(const IInputLayer::MsgData& out);
-
-	void clearCacheData();
-
-	void initData();
+	bool isEsc = false;
 };
 
 
+class Data {
+private:
+	using MsgData = IInputLayer::MsgData;
+	using GameSta = IGameState::GameSta;
 
-struct Intend {
-	bool isExit = false;
-	bool isPause = false;
+	MsgData cacheMsgData = {};
 
-	bool replaceSelect = false;
+	bool F1debug = false;
+	bool prveF1debug = false;
 
-	
+public:
+	//游戏意图
+	Intend gameIntend;
 
-	void clear() {
-		isExit = false;
-		isPause = false;
+	//仅仅提交数据
+	void pushMsgData(const MsgData& out);
+	const MsgData& getMsgData()const;
 
-		replaceSelect = false;
-	}
+	void pushF1debug(bool purr, bool prve);
+	const bool getF1debug()const;
+	const bool getPrveF1debug()const;
+
+	//每帧调用
+	void clearIntend();
+
+	void initData();
 };
