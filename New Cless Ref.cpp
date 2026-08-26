@@ -2,7 +2,7 @@
 
 #include <easyx.h>
 
-#include "msg.h"
+#include "inputLayer.h"
 #include "render.h"
 #include "StateTable.h"
 #include "logic.h"
@@ -16,32 +16,23 @@ int main()
 {
 	timeBeginPeriod(1);  // // 提高定时器精度,全局设置，程序结束时记得 timeEndPeriod(1)
 
-	Msg msg;
-	MsgData msgData;
+	InputLayer inputLayer;
 
 	Renderer render;
 	StateTable renderSta;
 
 	Logic logic;
 
-	msg.initMsg();
+	inputLayer.initInputLayer();
 	logic.onEnter();
-
-
-	//生成画布
-	initgraph(1080, 720);
-	setbkcolor(WHITE);             //设置背景（白）
-	cleardevice();
-
-	//字体
-	setbkmode(OPAQUE);//TRANSPARENT
+	render.initEasyX();
 
 	while (true) {
 		if (logic.Exit())break;
 		//sysCommand.clear();
 
-		msg.GetMsg(msgData);
-		logic.tick(msgData);
+		inputLayer.poll();
+		logic.tick(inputLayer.getMsgData());
 
 		logic.pushRender(renderSta);
 		render.render(renderSta, logic.pushCtx());

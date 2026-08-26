@@ -6,10 +6,7 @@
 #include <easyx.h>
 #include <array>
 
-
-
-#include "msgBoard.h"
-
+#include "IInputLayer.h"
 
 // ========== 监听层 ===========
 class Msg {
@@ -41,13 +38,12 @@ private:
     //光标坐标
     Position mousePos_;
 
-
-    //写入黑板
-    void push(MsgData& msgData);
 public:
+    //返回提交数据
+    const IInputLayer::MsgData push();
 
     //鼠标键盘监听处理
-    void GetMsg(MsgData& msgData);
+    void GetMsg();
 
     //初始化（自动注册）
     void initMsg();

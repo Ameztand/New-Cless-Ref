@@ -11,7 +11,7 @@ private:
 public:
     void onEnter(GameCtx& ctx)override;
     void onExit(GameCtx& ctx) override;
-    void tick(GameCtx& ctx, MsgData& msgData)override;
+    void tick(GameCtx& ctx, const IInputLayer::MsgData& out)override;
     int getID() const override;
 };
 
@@ -23,6 +23,6 @@ private:
 public:
     void onEnter(GameCtx& ctx)override;
     void onExit(GameCtx& ctx) override;
-    void tick(GameCtx& ctx, MsgData& msgData)override;
+    void tick(GameCtx& ctx, const IInputLayer::MsgData& out)override;
     int getID() const override;
 };

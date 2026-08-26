@@ -1,23 +1,25 @@
 #include "msg.h"
 
-#include "common.h"
+//#include "InputLayer.h"
+//#include "msgStore.h"
 
-
-
-
-void Msg::push(MsgData& msgData)
+const IInputLayer::MsgData Msg::push() 
 {
-    msgData.Esc = keySta_[VK_ESCAPE];
-    msgData.F1 = keySta_[VK_F1];
+    IInputLayer::MsgData tempData;
 
-    msgData.isMouseF = (mouesDown_.getPressSta() == 0 ? false : true);
-    msgData.MousePos = mousePos_;
+    tempData.Esc = static_cast<IInputLayer::KeySta>(keySta_[VK_ESCAPE]);
+    tempData.F1 = static_cast<IInputLayer::KeySta>(keySta_[VK_F1]);
 
-    //printf("提交msg\n");
+    tempData.isMouseF = (mouesDown_.getPressSta() == 0 ? false : true);
+    tempData.MousePos = mousePos_;
+
+    //printf("pull(%d,%d)\n", mousePos_.x, mousePos_.y);
+
+    return tempData;
 }
 
 // ========== 监听层 ===========
-void Msg::GetMsg(MsgData& msgData) {
+void Msg::GetMsg() {
     //处理队列写入缓冲
     while (peekmessage(&msg_, EX_MOUSE | EX_KEY)) {
         if (msg_.message == WM_KEYDOWN) {
@@ -80,13 +82,15 @@ void Msg::GetMsg(MsgData& msgData) {
     mouesDown_.update(tempMouse_);
 
     //统一写入黑板
-    push(msgData);
+    //push(MsgBoard);
 
     //清空临时数据
+    /*
     for (int i = 0; i < 256; i++) {
-        //tempKeys_[i] = {};
-        //tempMouse_ = false;
+        tempKeys_[i] = {};
+        tempMouse_ = false;
     }
+    */
 }
 
 void Msg::initMsg()

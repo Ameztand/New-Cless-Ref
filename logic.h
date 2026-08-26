@@ -4,14 +4,15 @@
 #include "common.h"
 #include "context.h"
 
-#include "gameBoard.h"
+#include "logicStore.h"
 #include "gameStateMachine.h"
 
 #include "StateTable.h"
 
+#include"IInputLayer.h"
 
 
-class MsgData;
+
 struct StateTable;
 
 
@@ -29,11 +30,12 @@ private:
 public:
 	void onEnter();
 
-	void tick(MsgData& msgData);
+	void tick(const IInputLayer::MsgData& out);
 
-	void translateMsg(MsgData& msgData);
+	void translateMsg();
 
-	bool translateDebug(MsgData& msgData);
+	bool translateDebug();
+
 	//检查ESC退出
 	bool Exit();
 	//提交渲染数据

@@ -21,16 +21,13 @@
     <ClCompile Include="common.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="msgBoard.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="msg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="logic.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="gameBoard.cpp">
+    <ClCompile Include="logicStore.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="gameStateMachine.h">
@@ -45,12 +42,15 @@
     <ClCompile Include="render.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="inputLayer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="msgStore.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="msgBoard.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="msg.h">
@@ -62,7 +62,7 @@
     <ClInclude Include="logic.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="gameBoard.h">
+    <ClInclude Include="logicStore.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="context.h">
@@ -75,6 +75,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="StateTable.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="IInputLayer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="inputLayer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="msgStore.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

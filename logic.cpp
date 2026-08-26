@@ -2,7 +2,6 @@
 
 #include <memory>
 
-#include "msgBoard.h"
 #include "gameState.h"
 
 
@@ -11,13 +10,14 @@ void Logic::onEnter()
 	gameSta.initGameSta(ctx);
 }
 
-void Logic::tick(MsgData& msgData)
+void Logic::tick(const IInputLayer::MsgData& out)
 {
-	translateMsg(msgData);
+	data.pollMsgData(out);
+	translateMsg();
 	if (intend.isExit)intend.isPause = gameSta.popSta(ctx);
 	if (!intend.isPause) {
 		//Õ»¶¥
-		gameSta.getState()->tick(ctx, msgData);
+		gameSta.getState()->tick(ctx, out);
 
 		//»»Õ»
 		if (intend.replaceSelect) {
@@ -28,24 +28,30 @@ void Logic::tick(MsgData& msgData)
 
 }
 
-void Logic::translateMsg(MsgData& msgData)
+void Logic::translateMsg()
 {
-	intend.isExit = msgData.getEsc(1);
+	const IInputLayer::MsgData& out = data.getMsgData();
+	using KeySta = IInputLayer::KeySta;
+	
+	intend.isExit = (out.Esc == KeySta::falling);
 
-	flag.isDebug = translateDebug(msgData);
+	flag.isDebug = translateDebug();
 }
 
-bool Logic::translateDebug(MsgData& msgData)
+bool Logic::translateDebug()
 {
-	if (msgData.getF1(1)) {
+	const IInputLayer::MsgData& out = data.getMsgData();
+	using KeySta = IInputLayer::KeySta;
+
+	if (out.F1 == KeySta::falling) {
 		flag.isDebug = !flag.isDebug;
 		printf("ÇÐ»»\n");
 	}
-	else if (msgData.getF1(3)) { 
+	else if (out.F1 == KeySta::Ldown) {
 		flag.LDebug = true;
 		printf("3");
 	}
-	else if (msgData.getF1(4) && flag.LDebug) {
+	else if (out.F1 == KeySta::rising && flag.LDebug) {
 		flag.LDebug = false;
 		flag.isDebug = !flag.isDebug;
 		printf("4\n");

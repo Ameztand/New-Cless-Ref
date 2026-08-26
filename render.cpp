@@ -1,7 +1,7 @@
 #include "render.h"
 
 #include "StateTable.h"
-#include "gameBoard.h"
+#include "logicStore.h"
 
 void Renderer::renderPUgame(const GameCtx& ctx)
 {
