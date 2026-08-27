@@ -6,8 +6,6 @@
 
 class Renderer {
 private:
-	RenderData renderData = {};
-
 	//颜色数组
 	COLORREF colors[2] = {
 		RGB(255, 255, 255),//白
@@ -21,9 +19,14 @@ private:
 		L"♔", L"♕", L"♗", L"♘", L"♖", L"♙"    // 7-12 白 王后象马车兵
 	};
 
+	RenderData renderData = {};
+
 public:
 	//渲染双人
-	void renderPUgame();
+	void renderPuGame();
+
+	//渲染暂停
+	void renderPause();
 
 	//渲染选择难度
 	void renderSelect();
@@ -39,3 +42,6 @@ public:
 	//初始化界面
 	void initEasyX();
 };
+
+//===== 辅助函数 =====
+void renderRectangle(int i);

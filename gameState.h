@@ -26,3 +26,32 @@ public:
     void tick(Data& data, const IInputLayer::MsgData& out)override;
     IGameState::GameSta getID() const override;
 };
+
+//ÔÝÍ£
+class Pause :public IGameState {
+private:
+    const IGameState::GameSta ID = IGameState::GameSta::Pause;
+
+public:
+    void onEnter(Data& data)override;
+    void onExit(Data& data) override;
+    void tick(Data& data, const IInputLayer::MsgData& out)override;
+    IGameState::GameSta getID() const override;
+};
+
+//Ë«ÈËÓÎÏ·
+class PuGame :public IGameState {
+private:
+    const IGameState::GameSta ID = IGameState::GameSta::PuGame;
+
+public:
+    void onEnter(Data& data)override;
+    void onExit(Data& data) override;
+    void tick(Data& data, const IInputLayer::MsgData& out)override;
+    IGameState::GameSta getID() const override;
+};
+
+//===== ¸¨Öúº¯Êý =====
+bool EscPop(Data& data, const IInputLayer::MsgData& out);
+
+bool EscPuase(Data& data, const IInputLayer::MsgData& out);

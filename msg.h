@@ -7,6 +7,7 @@
 #include <array>
 
 #include "IInputLayer.h"
+#include "config_msg.h"
 
 // ========== ¼àÌý²ã ===========
 class Msg {

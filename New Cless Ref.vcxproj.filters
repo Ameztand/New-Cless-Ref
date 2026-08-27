@@ -48,6 +48,12 @@
     <ClCompile Include="msgStore.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="config_logic.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="config_msg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -81,6 +87,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="msgStore.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="config_logic.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="config_msg.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

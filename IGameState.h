@@ -13,8 +13,8 @@ public:
         null,
         Lobby,
         Select,
-        game,
-        pause
+        Pause,
+        PuGame
     };
 
     virtual ~IGameState() = default;

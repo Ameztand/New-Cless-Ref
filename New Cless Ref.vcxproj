@@ -124,6 +124,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="common.cpp" />
+    <ClCompile Include="config_logic.cpp" />
+    <ClCompile Include="config_msg.cpp" />
     <ClCompile Include="logicStore.cpp" />
     <ClCompile Include="gameState.cpp" />
     <ClCompile Include="gameStateMachine.cpp" />
@@ -137,6 +139,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />
+    <ClInclude Include="config_logic.h" />
+    <ClInclude Include="config_msg.h" />
     <ClInclude Include="logicStore.h" />
     <ClInclude Include="gameState.h" />
     <ClInclude Include="IGameState.h" />

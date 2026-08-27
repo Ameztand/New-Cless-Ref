@@ -7,16 +7,16 @@
 
 void Logic::onEnter()
 {
+	data.initData();
 	gameSta.initGameSta(data);
 }
 
 void Logic::tick(const IInputLayer::MsgData& out)
 {
-	//初步翻译全局热键
+	//缓存输入数据到黑板
 	data.pushMsgData(out);
-	translateMsg();
 
-	//执行栈顶
+	translateMsg();
 	gameSta.getState()->tick(data, out);
 
 	//换栈检查
@@ -24,8 +24,26 @@ void Logic::tick(const IInputLayer::MsgData& out)
 	else if (data.gameIntend.pushSelect) {
 		gameSta.pushSta(data, std::make_unique<Select>());
 	}
+	else if (data.gameIntend.pushPause) {
+		gameSta.pushSta(data, std::make_unique<Pause>());
+	}
+	else if (data.gameIntend.pushPuGame) {
+		gameSta.pushSta(data, std::make_unique<PuGame>());
+	}
+	else if (data.gameIntend.rePuGame) {
+		gameSta.popSta(data);
+		gameSta.pushSta(data, std::make_unique<PuGame>());
+	}
+	else if (data.gameIntend.backLobby) {
+		while (!(gameSta.getStaID() == IGameState::GameSta::Lobby)) {
+			gameSta.popSta(data);
+		}
+	}
+	//if (data.gameIntend.isEsc)gameSta.popSta(data);
 
-	if (data.gameIntend.isEsc)gameSta.popSta(data);
+	//数据清理
+	if (data.gameIntend.initGameData)data.initGameData();
+	if (data.gameIntend.initALLData)data.initData();
 }
 
 void Logic::translateMsg()
@@ -33,7 +51,7 @@ void Logic::translateMsg()
 	const IInputLayer::MsgData& out = data.getMsgData();
 	using KeySta = IInputLayer::KeySta;
 	
-	data.gameIntend.isEsc = (out.Esc == KeySta::falling);
+	//data.gameIntend.isEsc = (out.Esc == KeySta::falling);
 	translateDebug();
 }
 
@@ -65,13 +83,15 @@ bool Logic::Exit()
 	return gameSta.empty();
 }
 
-const RenderData Logic::pushRender()
+const RenderData& Logic::pushRender()
 {
-	RenderData tempRenderData;
-
 	tempRenderData.gameSta = gameSta.getStaID();
 	tempRenderData.StaDepth = gameSta.getStaDepth();
 	tempRenderData.isDebug = data.getF1debug();
+
+	tempRenderData.piece = data.getPiece();
+
+	tempRenderData.mosuePos = data.getMsgData().MousePos;
 
 	return tempRenderData;
 }

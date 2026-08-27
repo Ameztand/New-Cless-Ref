@@ -16,6 +16,8 @@ private:
 	Data data;
 	State gameSta;
 
+	//引用本体
+	RenderData tempRenderData;
 public:
 	void onEnter();
 
@@ -29,7 +31,7 @@ public:
 	bool Exit();
 
 	//返回渲染数据
-	const RenderData pushRender();
+	const RenderData& pushRender();
 
 	//清理意图管线
 	void clearIntend();
