@@ -31,6 +31,7 @@ void Logic::tick(const IInputLayer::MsgData& out)
 		gameSta.pushSta(data, std::make_unique<PuGame>());
 	}
 	else if (data.gameIntend.rePuGame) {
+		gameSta.popSta(data);//ÏÈÍË³öÔÝÍ£×´Ì¬
 		gameSta.popSta(data);
 		gameSta.pushSta(data, std::make_unique<PuGame>());
 	}
@@ -90,6 +91,8 @@ const RenderData& Logic::pushRender()
 	tempRenderData.isDebug = data.getF1debug();
 
 	tempRenderData.piece = data.getPiece();
+	tempRenderData.selectingPos = data.getSelectingPos();
+	tempRenderData.selectingCell = data.getSelecting()[0];
 
 	tempRenderData.mosuePos = data.getMsgData().MousePos;
 

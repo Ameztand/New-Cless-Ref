@@ -51,7 +51,4 @@ public:
     IGameState::GameSta getID() const override;
 };
 
-//===== ¸¨Öúº¯Êý =====
-bool EscPop(Data& data, const IInputLayer::MsgData& out);
 
-bool EscPuase(Data& data, const IInputLayer::MsgData& out);

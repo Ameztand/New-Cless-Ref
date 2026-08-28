@@ -11,7 +11,7 @@ struct Cell {
     Position pos = Epos;
 
     //是否移动过（为王、车使用，判定王车易位）
-    bool hasMoved = false;
+    //bool hasMoved = false;
 
     // 成员函数形式重载 ==
     bool operator==(const Cell& other) const {
@@ -20,7 +20,7 @@ struct Cell {
 };
 
 //单位棋子
-extern Cell Ecless;
+extern Cell Ecell;
 
 //特殊类型数组
 

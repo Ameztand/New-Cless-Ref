@@ -5,21 +5,38 @@
 #include "logicStore.h"
 #include "typeRenderData.h"
 
-bool EscPop(Data& data, const IInputLayer::MsgData& out)
-{
-    using KeySta = IInputLayer::KeySta;
-    bool temp = (out.Esc == KeySta::falling);
-    data.gameIntend.popSta = temp;
-    return temp;
+namespace Esc{
+    bool pop(Data& data, const IInputLayer::MsgData& out)
+    {
+        using KeySta = IInputLayer::KeySta;
+        bool temp = (out.Esc == KeySta::falling);
+        data.gameIntend.popSta = temp;
+        return temp;
+    }
+
+    bool puase(Data& data, const IInputLayer::MsgData& out)
+    {
+        using KeySta = IInputLayer::KeySta;
+        bool temp = (out.Esc == KeySta::falling);
+        data.gameIntend.pushPause = temp;
+        return temp;
+    }
 }
 
-bool EscPuase(Data& data, const IInputLayer::MsgData& out)
-{
-    using KeySta = IInputLayer::KeySta;
-    bool temp = (out.Esc == KeySta::falling);
-    data.gameIntend.pushPause = temp;
-    return temp;
+namespace Translate {
+    Position mousePosToPiecePos(const Position& pos)
+    {
+        if (pos.x > Parea.left && pos.x < Parea.right && pos.y > Parea.top && pos.y < Parea.bottom) {
+            int col = (pos.x - PIECE_START_X) / PIECE_CELL_SIZE;
+            int row = (pos.y - PIECE_START_Y) / PIECE_CELL_SIZE;
+            //printf("%d %d\n", col, row);
+            const Position res = { col,row };
+            return res;
+        }
+        return Epos;
+    }
 }
+
 
 
 void Lobby::onEnter(Data& data)
@@ -35,7 +52,7 @@ void Lobby::onExit(Data& data)
 void Lobby::tick(Data& data, const IInputLayer::MsgData& out)
 {
     //退出
-    if (EscPop(data, out))return;
+    if (Esc::pop(data, out))return;
 
     //开始按钮
     const Position& pos = out.MousePos;
@@ -62,7 +79,7 @@ void Select::onExit(Data& data)
 void Select::tick(Data& data, const IInputLayer::MsgData& out)
 {
     //退出
-    if (EscPop(data, out))return;
+    if (Esc::pop(data, out))return;
 
     //单人
     const Position& pos = out.MousePos;
@@ -88,9 +105,10 @@ void PuGame::onExit(Data& data)
 void PuGame::tick(Data& data, const IInputLayer::MsgData& out)
 {
     //暂停
-    if (EscPuase(data, out))return;
+    if (Esc::puase(data, out))return;
 
-    
+    data.pushSelecting(Translate::mousePosToPiecePos(out.MousePos));
+
 }
 
 IGameState::GameSta PuGame::getID() const
@@ -109,7 +127,7 @@ void Pause::onExit(Data& data)
 void Pause::tick(Data& data, const IInputLayer::MsgData& out)
 {
     //退出
-    if (EscPop(data, out))return;
+    if (Esc::pop(data, out))return;
 
     //退出
     const Position& pos = out.MousePos;

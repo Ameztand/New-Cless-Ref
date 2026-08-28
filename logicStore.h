@@ -31,9 +31,14 @@ private:
 	bool F1debug = false;
 	bool prveF1debug = false;
 
+
+
 	Piece piece = {};//真实位置
 	Piece sumiPiece = {};//模拟位置
 	LogicPiece logicPiece = {};//可移动棋盘
+
+	Position selectingPos = Epos;
+	std::array<Cell, 2>selecting = {};//先后点击棋子（选择，执棋）
 
 public:
 	//游戏意图
@@ -61,6 +66,13 @@ public:
 	void initPiece();
 	void initSumiPiece();
 	void initLogicPiece();
+
+	//自动推导
+	void pushSelecting(const Cell& out);
+	void pushSelecting(const Position& out);
+	const std::array<Cell, 2>& getSelecting()const;
+	const Position& getSelectingPos()const;
+	void initSelecting();
 
 	//每帧调用，清理意图
 	void clearIntend();

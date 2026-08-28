@@ -2,8 +2,6 @@
 
 #include "common.h"
 
-extern const int LOW_PRESS_TIME;
-
 //Ë«»º³åbool(prev,curr)
 struct DoubleBool {
     bool prev = false;

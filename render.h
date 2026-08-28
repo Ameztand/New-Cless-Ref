@@ -20,6 +20,7 @@ private:
 	};
 
 	RenderData renderData = {};
+	IGameState::GameSta prveGameSta = IGameState::GameSta::null;//暂停后绘画背景板
 
 public:
 	//渲染双人
@@ -44,4 +45,4 @@ public:
 };
 
 //===== 辅助函数 =====
-void renderRectangle(int i);
+//void renderRectangle(const renderSelectingRrec::ModeSta modeSta);

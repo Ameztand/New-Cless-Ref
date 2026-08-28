@@ -79,7 +79,7 @@ void Data::initPiece()
 			int ID = EpieceID[j][i];
 			if (ID != 0) {
 				p.id = ID;
-				p.hasMoved = true;
+				//p.hasMoved = true;
 			}
 			piece[j][i] = p;
 		}
@@ -94,6 +94,34 @@ void Data::initSumiPiece()
 void Data::initLogicPiece()
 {
 	logicPiece = {};
+}
+
+void Data::pushSelecting(const Cell& out)
+{
+	if (out == Ecell)return;
+	for (int i = 0; i < 2; i++) {
+		if (selecting[i] == Ecell)selecting[i] = out;
+	}
+}
+
+void Data::pushSelecting(const Position& out)
+{
+	selectingPos = out;
+}
+
+const std::array<Cell, 2>& Data::getSelecting() const
+{
+	return selecting;
+}
+
+const Position& Data::getSelectingPos() const
+{
+	return selectingPos;
+}
+
+void Data::initSelecting()
+{
+	selecting[0] = selecting[1] = Ecell;
 }
 
 void Data::clearIntend()
@@ -111,5 +139,6 @@ void Data::initData()
 void Data::initGameData()
 {
 	initPiece();
+	initSelecting();
 	//printf("清理游戏数据\n");
 }

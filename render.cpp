@@ -4,21 +4,48 @@
 #include "logicStore.h"
 #include "IGameState.h"
 
-const int PIECE_START_X = 75;//棋盘左上角x坐标
-const int PIECE_START_Y = 75;//棋盘左上角y坐标
-const int PIECE_CELL_SIZE = 60;//棋盘格子大小
+namespace renderSelectingRrec {
+    enum class ModeSta : uint8_t {
+        Select,
+        Puase
+    };
+    enum class LASta : uint8_t {
+        line,
+        area
+    };
 
-std::array < std::array<COLORREF, 3>, 2 > pauseLineColors = { {
-    { {RGB(128, 128, 128), RGB(128, 128, 128), RGB(20, 50, 200)} },//选择
-    { {RGB(100, 204, 106), RGB(80, 180, 180), RGB(255, 180, 75)} }//暂停
-    } };
-std::array < std::array<COLORREF, 3>, 2 > pauseRecColors = { {
-    { {RGB(200, 200, 200), RGB(200, 200, 200), RGB(124, 254, 86)} },//选择
-    { {RGB(124, 254, 86), RGB(50, 230, 200), RGB(255, 210, 75)} }//暂停
-    } };
+    //按钮坐标等数据
+    Position bottonCentrePos = { 540,425 };
+    int bottonInterval = 130;
+    Position bottonSize = { 100,50 };
 
-//255, 220, 200肉色
+    //按钮颜色
+    constexpr std::array < std::array<COLORREF, 3>, 2 > Select = { {
+        { {RGB(128, 128, 128), RGB(128, 128, 128), RGB(50, 130, 250)} },//线
+        { {RGB(200, 200, 200), RGB(200, 200, 200), RGB(124, 254, 86)} }//面
+        } };
+    constexpr std::array < std::array<COLORREF, 3>, 2 > Puase = { {
+        { {RGB(100, 204, 106), RGB(80, 180, 180),  RGB(255, 180, 75)} },//线
+        { {RGB(124, 254, 86),  RGB(50, 230, 200),  RGB(255, 210, 75)} }//面
+        } };
+    constexpr std::array<std::array < std::array<COLORREF, 3>, 2 >, 2> renderSelectinRrecColorTable = {
+        Select,Puase
+    };
+    //255, 220, 200肉色
+    //0Xc0c15e//250, 252, 156//50, 200, 200
+    //setfillcolor(RGB(255, 39, 0));
 
+    //查表(模式，线面，下标)
+    COLORREF GetPauseLineColor(const ModeSta& modeSta, const LASta& LASta, const int index) {
+        return renderSelectinRrecColorTable[static_cast<uint8_t>(modeSta)][static_cast<uint8_t>(LASta)][index];
+    }
+}
+
+//===== 辅助函数 =====
+void renderRectangle(const renderSelectingRrec::ModeSta modeSta);
+
+
+    
 void Renderer::renderPuGame()
 {
     // 格子颜色
@@ -51,39 +78,40 @@ void Renderer::renderPuGame()
         outtextxy(PIECE_START_X + i * PIECE_CELL_SIZE + 25, PIECE_START_Y + 8 * PIECE_CELL_SIZE + 10, buf);
     }
 
-    // 棋子
+    //辅助函数-渲染棋子
+    auto renderCell = [&](const Position& pos) {
+        const wchar_t* ch = pieceChar[renderData.piece[pos.y][pos.x].id + 6];
+        int x = PIECE_START_X + pos.x * PIECE_CELL_SIZE + (PIECE_CELL_SIZE - textwidth(ch)) / 2;
+        int y = PIECE_START_Y + pos.y * PIECE_CELL_SIZE + (PIECE_CELL_SIZE - textheight(ch)) / 2;
+        outtextxy(x, y, ch);
+        };
+
+    // 普通棋子
+    Position exCellPos = renderData.selectingCell.pos;
+    if (exCellPos == Epos)exCellPos = renderData.selectingPos;
+    //printf("%d %d\n", pos.x, pos.y);
     settextstyle(48, 0, L"Segoe UI Symbol");
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
-            Position temp = { i,j };
-            const wchar_t* ch = pieceChar[renderData.piece[temp.y][temp.x].id + 6];
-            int x = PIECE_START_X + i * PIECE_CELL_SIZE + (PIECE_CELL_SIZE - textwidth(ch)) / 2;
-            int y = PIECE_START_Y + j * PIECE_CELL_SIZE + (PIECE_CELL_SIZE - textheight(ch)) / 2;
-            outtextxy(x, y, ch);
+            Position temp = { i,j };//棋盘[x][y]
+            if (temp == exCellPos)continue;
+            renderCell(temp);
         }
+    }
+
+    //高亮选择
+    if (!(exCellPos == Epos)) {
+        //高亮棋子
+        settextstyle(64, 0, L"Segoe UI Symbol");
+        renderCell(exCellPos);
+        //高亮边框
+        setlinecolor(RGB(255, 255, 0));
+        setlinestyle(PS_SOLID, 5);
+        rectangle(PIECE_START_X + exCellPos.x * PIECE_CELL_SIZE, PIECE_START_Y + exCellPos.y * PIECE_CELL_SIZE, PIECE_START_X + (exCellPos.x + 1) * PIECE_CELL_SIZE, PIECE_START_Y + (exCellPos.y + 1) * PIECE_CELL_SIZE);
     }
 
     /*
-    //高亮（只画边框，不加填充）
-    const Cell& tempCell = data.getCheckedCless()[0];
-    const Position& pos = tempCell.pos;
-    //printf("%d %d\n", pos.x, pos.y);
-    if (tempCell.id != 0) {
-        setlinecolor(RGB(255, 255, 0));
-        setlinestyle(PS_SOLID, 5);
-        rectangle(PIECE_START_X + pos.x * PIECE_CELL_SIZE, PIECE_START_Y + pos.y * PIECE_CELL_SIZE, PIECE_START_X + (pos.x + 1) * PIECE_CELL_SIZE, PIECE_START_Y + (pos.y + 1) * PIECE_CELL_SIZE);
-    }
-    else {
-        const Position& pos2 = data.getPiecePos();
-        if (!(pos2 == Epos)) {
-            setlinecolor(RGB(255, 255, 0));
-            setlinestyle(PS_SOLID, 5);
-            rectangle(PIECE_START_X + pos2.x * PIECE_CELL_SIZE, PIECE_START_Y + pos2.y * PIECE_CELL_SIZE, PIECE_START_X + (pos2.x + 1) * PIECE_CELL_SIZE, PIECE_START_Y + (pos2.y + 1) * PIECE_CELL_SIZE);
-        }
-    }
-
-
-    //带移动格子
+    //待移动格子
     const LogicPiece& tempLogicPiece = data.getAllLogicPiece();
     setfillcolor(GREEN);
     for (int i = 0; i < 8; i++) {
@@ -99,7 +127,7 @@ void Renderer::renderPuGame()
 void Renderer::renderPause()
 {
     //背景板
-    renderRectangle(1);
+    renderRectangle(renderSelectingRrec::ModeSta::Puase);
     //文字
     setbkmode(TRANSPARENT);
     settextcolor(BLACK);
@@ -117,7 +145,7 @@ void Renderer::renderSelect()
     //cleardevice();
 
     //背景板
-    renderRectangle(0);
+    renderRectangle(renderSelectingRrec::ModeSta::Select);
     //文字
     setbkmode(TRANSPARENT);
     settextcolor(BLACK);
@@ -194,6 +222,7 @@ void Renderer::renderDebug()
 
 void Renderer::render(const RenderData& out)
 {
+    if (out.gameSta != renderData.gameSta)prveGameSta = renderData.gameSta;
     renderData = out;
 
     BeginBatchDraw();   // 开始批量绘图（双缓冲）
@@ -209,6 +238,13 @@ void Renderer::render(const RenderData& out)
         renderSelect();
         break;
     case GameSta::Pause:
+        //背景板
+        switch (prveGameSta) {
+        case GameSta::PuGame:
+            renderPuGame();
+            break;
+        }
+
         renderPause();
         break;
     case GameSta::PuGame:
@@ -231,47 +267,32 @@ void Renderer::initEasyX() {
 	setbkmode(OPAQUE);//TRANSPARENT
 }
 
-void renderRectangle(int i)
+void renderRectangle(const renderSelectingRrec::ModeSta modeSta)
 {
+    using LA = renderSelectingRrec::LASta;
+
+    // 画按钮
+    auto renderBotton = [&](const renderSelectingRrec::ModeSta modeSta, int index) {
+        setlinecolor(renderSelectingRrec::GetPauseLineColor(modeSta, LA::line, index));//灰
+        setlinestyle(PS_SOLID, 3);
+        int left   = renderSelectingRrec::bottonCentrePos.x - renderSelectingRrec::bottonSize.x / 2 + renderSelectingRrec::bottonInterval * (index - 1);
+        int top    = renderSelectingRrec::bottonCentrePos.y - renderSelectingRrec::bottonSize.y / 2;
+        int right  = renderSelectingRrec::bottonCentrePos.x + renderSelectingRrec::bottonSize.x / 2 + renderSelectingRrec::bottonInterval * (index - 1);
+        int bottom = renderSelectingRrec::bottonCentrePos.y + renderSelectingRrec::bottonSize.y / 2;
+        rectangle(left, top, right, bottom);
+        setfillcolor(renderSelectingRrec::GetPauseLineColor(modeSta, LA::area, index));//灰
+        solidrectangle(left + 2, top + 2, right - 2, bottom - 2);
+        };
+
     // 画后表格
-    setlinecolor(RGB(0, 0, 200));
-    setlinestyle(PS_SOLID, 3);
-    line(310, 240, 770, 240);//上
-    line(310, 480, 770, 480);//下
-    line(310, 240, 310, 480);//左
-    line(770, 240, 770, 480);//右
+    setlinecolor(RGB(50, 150, 250));
+    setlinestyle(PS_SOLID, 6);
+    rectangle(310, 240, 770, 480);
     setfillcolor(RGB(250, 250, 156));//0Xc0c15e//250, 252, 156
     solidrectangle(312, 242, 768, 478);
-
-    //画左按钮
-    setlinecolor(pauseLineColors[i][0]);//灰
-    setlinestyle(PS_SOLID, 3);
-    line(360, 400, 460, 400);
-    line(360, 450, 460, 450);
-    line(360, 400, 360, 450);
-    line(460, 400, 460, 450);
-    setfillcolor(RGB(255, 39, 0));//0Xc0c15e//250, 252, 156//50, 200, 200
-    setfillcolor(pauseRecColors[i][0]);//灰
-    solidrectangle(362, 402, 458, 448);
-
-    //画中按钮
-    setlinecolor(pauseLineColors[i][1]);//灰
-    setlinestyle(PS_SOLID, 3);
-    line(490, 400, 590, 400);
-    line(490, 450, 590, 450);
-    line(490, 400, 490, 450);
-    line(590, 400, 590, 450);
-    setfillcolor(RGB(255, 220, 75));//0Xc0c15e//250, 252, 156
-    setfillcolor(pauseRecColors[i][1]);//灰
-    solidrectangle(492, 402, 588, 448);
-
-    //画右按钮
-    setlinecolor(pauseLineColors[i][2]);
-    setlinestyle(PS_SOLID, 3);
-    line(620, 400, 720, 400);
-    line(620, 450, 720, 450);
-    line(620, 400, 620, 450);
-    line(720, 400, 720, 450);
-    setfillcolor(pauseRecColors[i][2]);//0Xc0c15e//250, 252, 156
-    solidrectangle(622, 402, 718, 448);
+    
+    // 画按钮
+    for (int i = 0; i < 3; i++) {
+        renderBotton(modeSta, i);
+    }
 }

@@ -4,6 +4,11 @@
 #include <array>
 
 //点击区域
+extern const int LOW_PRESS_TIME;
+extern const int PIECE_START_X;//棋盘左上角x坐标
+extern const int PIECE_START_Y;//棋盘左上角y坐标
+extern const int PIECE_CELL_SIZE;//棋盘格子大小
+
 extern const RECT Larea, Marea, Rarea, Sarea, Parea;
 
 //坐标结构体（x, y）

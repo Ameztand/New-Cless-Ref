@@ -13,4 +13,4 @@ std::array<std::array<int, 8>, 8> EpieceID = { {
     } };
 
 //µ¥Î»Æå×Ó
-Cell Ecless = { 0,Epos,false };
+Cell Ecell = { 0,Epos };
