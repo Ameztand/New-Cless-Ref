@@ -61,7 +61,7 @@ const Piece& Data::getSumiPiece() const
 
 const Cell& Data::getSumiPiece(const Position& pos) const
 {
-	return sumiPiece[pos.y][pos.x];
+	return pos == Epos ? Ecell : sumiPiece[pos.y][pos.x];
 }
 
 void Data::pushLogicPiece(const LogicPiece& out)
@@ -137,6 +137,29 @@ void Data::initSelecting()
 	selectingCell = Ecell;
 }
 
+void Data::pushKingPos(const Position& pos, const int camp)
+{
+	int i = (camp == 1 ? 0 : 1);
+	KingPos[i] = pos;
+}
+
+const std::array<Position, 2>& Data::getKingPos() const
+{
+	return KingPos;
+}
+
+const Position& Data::getKingPos(const int camp) const
+{
+	int i = (camp == 1 ? 0 : 1);
+	return KingPos[i];
+}
+
+void Data::initKingPos()
+{
+	KingPos[0] = { 4,7 };
+	KingPos[1] = { 4,0 };
+}
+
 void Data::clearIntend()
 {
 	gameIntend = {};
@@ -154,5 +177,7 @@ void Data::initGameData()
 	initPiece();
 	initSelecting();
 	initLogicPiece();
+
+	initKingPos();
 	//printf("清理游戏数据\n");
 }

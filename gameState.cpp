@@ -39,12 +39,7 @@ namespace HandleInput{
     }
 }
 
-namespace calculateMovable {
-    enum Sta :uint8_t {
-        Straight,//0表示直线
-        Diagonal
-    };
-
+namespace PosOffset {
     Position posMoveNormal(const Position& pos, int dir)
     {
         const int dx[8] = { 0,1,1,1,0,-1,-1,-1 };
@@ -72,6 +67,35 @@ namespace calculateMovable {
         }
         return Epos;
     }
+}
+
+namespace HandleMove {
+    void CellMoveToPos(Data& data, const Cell& SourceCell, const Position& TargetPos) {
+        Cell tempEcell = Ecell;
+        tempEcell.pos = SourceCell.pos;
+        Cell tempTarget = SourceCell;
+        tempTarget.pos = TargetPos;
+
+        data.pushPiece(tempTarget, TargetPos);
+        data.pushPiece(tempEcell, SourceCell.pos);
+    }
+
+    void SumiCellMoveToPos(Data& data, const Cell& SourceCell, const Position& TargetPos) {
+        Cell tempEcell = Ecell;
+        tempEcell.pos = SourceCell.pos;
+        Cell tempTarget = SourceCell;
+        tempTarget.pos = TargetPos;
+
+        data.pushSumiPiece(tempTarget, TargetPos);
+        data.pushSumiPiece(tempEcell, SourceCell.pos);
+    }
+}
+
+namespace calculateMovable{
+    enum Sta :uint8_t {
+        Straight,//0表示直线
+        Diagonal
+    };
 
     void Line(Data& data, const Cell& newCC, const Sta dir)
     {
@@ -82,7 +106,7 @@ namespace calculateMovable {
         for (int i = dir; i < 8; i += 2) {//dir==0表示直线
             tempPos = newClessPos;
             while (true) {
-                tempPos = posMoveNormal(tempPos, i);
+                tempPos = PosOffset::posMoveNormal(tempPos, i);
                 //出界检查
                 if (tempPos == Epos)break;
 
@@ -101,7 +125,7 @@ namespace calculateMovable {
         Position tempPos = Epos;
         int camp = (newClessID > 0) ? 1 : -1;
         for (int i = 0; i < 8; i++) {
-            tempPos = posMoveNormal(newClessPos, i);
+            tempPos = PosOffset::posMoveNormal(newClessPos, i);
             if (!(tempPos == Epos)) {
                 //没有将军检查
                 if (data.getPiece(tempPos).id * newClessID <= 0) {
@@ -119,7 +143,7 @@ namespace calculateMovable {
 
         Position tempPos = Epos;
         for (int i = 0; i < 8; i++) {
-            tempPos = posMoveKnight(newClessPos, i);//
+            tempPos = PosOffset::posMoveKnight(newClessPos, i);//
             if (!(tempPos == Epos)) {
                 if (data.getPiece(tempPos).id * newClessID <= 0) {
                     data.pushLogicPiece(tempPos, true);
@@ -137,25 +161,25 @@ namespace calculateMovable {
 
         //移动
         const int camp = (newClessID > 0) ? 1 : -1;
-        tempPos = posMoveNormal(newClessPos, 2 - 2 * camp);
+        tempPos = PosOffset::posMoveNormal(newClessPos, 2 - 2 * camp);
         if (!(tempPos == Epos)) {
             if (data.getPiece(tempPos).id == 0) {
                 data.pushLogicPiece(tempPos, true);
                 //第二步
-                tempPos = posMoveNormal(tempPos, 2 - 2 * camp);
+                tempPos = PosOffset::posMoveNormal(tempPos, 2 - 2 * camp);
                 if (newClessPos.y == (camp == -1 ? 1 : 6) && data.getPiece(tempPos).id == 0) {
                     data.pushLogicPiece(tempPos, true);
                 }
             }
         }
         //吃子
-        tempPos = posMoveNormal(newClessPos, 6 + camp);//左
+        tempPos = PosOffset::posMoveNormal(newClessPos, 6 + camp);//左
         if (!(tempPos == Epos)) {
             if (data.getPiece(tempPos).id * newClessID < 0) {
                 data.pushLogicPiece(tempPos, true);
             }
         }
-        tempPos = posMoveNormal(newClessPos, 2 - camp);//右
+        tempPos = PosOffset::posMoveNormal(newClessPos, 2 - camp);//右
         if (!(tempPos == Epos)) {
             if (data.getPiece(tempPos).id * newClessID < 0) {
                 data.pushLogicPiece(tempPos, true);
@@ -170,17 +194,136 @@ namespace calculateMovable {
     }
 }
 
-namespace HandleMove {
-    void CellMoveToPos(Data& data, const Cell& SourceCell, const Position& TargetPos) {
-        Cell tempEcell = Ecell;
-        tempEcell.pos = SourceCell.pos;
-        Cell tempTarget = SourceCell;
-        tempTarget.pos = TargetPos;
+namespace HandleAttack {
+    bool isAttackedByLine(Data& data, const Position& pos, const int camp)
+    {
+        Position tempPos = Epos;
+        bool isAttacked = false;
 
-        data.pushPiece(tempTarget, TargetPos);
-        data.pushPiece(tempEcell, SourceCell.pos);
+        for (int i = 0; i < 8; i++) {
+            tempPos = pos;
+            bool isBias = (i % 2 == 1);//斜为真
+            while (!(tempPos == Epos)) {
+                tempPos = PosOffset::posMoveNormal(tempPos, i);
+                int targetID = data.getSumiPiece(tempPos).id;
+
+                if (targetID != 0) {
+                    if (targetID * camp == -2) {//后
+                        isAttacked = true;
+                    }
+                    if (isBias) {
+                        if (targetID * camp == -3) {//象
+                            isAttacked = true;
+                        }
+                    }
+                    else {
+                        if (targetID * camp == -5) {//车
+                            isAttacked = true;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        return isAttacked;
+    }
+
+    bool isAttackedByKing(Data& data, const Position& pos, const int camp)
+    {
+        Position tempPos = Epos;
+        bool isAttacked = false;
+
+        for (int i = 0; i < 8; i++) {
+            tempPos = PosOffset::posMoveNormal(pos, i);
+            int targetID = data.getSumiPiece(tempPos).id;
+            if (camp * targetID == -1) {//王
+                isAttacked = true;
+            }
+        }
+
+        return isAttacked;
+    }
+
+    bool isAttackedByKnight(Data& data, const Position& pos, const int camp)
+    {
+        Position tempPos = Epos;
+        bool isAttacked = false;
+
+        for (int i = 0; i < 8; i++) {
+            tempPos = PosOffset::posMoveKnight(pos, i);//
+            int targetID = data.getSumiPiece(tempPos).id;
+            if (camp * targetID == -4) {//马
+                isAttacked = true;
+            }
+        }
+
+        return isAttacked;
+    }
+
+    bool isAttackedByPawn(Data& data, const Position& pos, const int camp)
+    {
+        const int Move[4] = { 7,1,3,5 };//白左，白右，黑左，黑右
+
+        Position tempPos = Epos;
+        bool isAttacked = false;
+
+        int i = (camp == 1 ? 0 : 2);
+        int cnt = 0;
+        for (i; cnt < 2; cnt++, i++) {
+            tempPos = PosOffset::posMoveNormal(pos, Move[i]);
+            int targetID = data.getSumiPiece(tempPos).id;
+            if (camp * targetID == -6) {//兵
+                isAttacked = true;
+            }
+        }
+
+
+        return isAttacked;
+    }
+
+    bool isAttacked(Data& data, const Position& pos, const int camp)
+    {
+        return isAttackedByPawn(data, pos, camp) ||
+            isAttackedByKnight(data, pos, camp) ||
+            isAttackedByKing(data, pos, camp) ||
+            isAttackedByLine(data, pos, camp); // 这里内部已经包含车、象、后
+    }
+
+    //检查某格是否被攻击
+    bool isCellAttackedAtPos(Data& data, const Cell& cell, const Position pos)
+    {
+        int camp = (cell.id > 0 ? 1 : -1);
+
+        data.initSumiPiece();
+
+        //模拟移动
+        HandleMove::SumiCellMoveToPos(data, cell, pos);
+
+        if (cell.id == camp) {//检查是否为王
+            return isAttacked(data, pos, camp);
+        }
+        else {
+            const Position& KingPos = data.getKingPos(camp);
+            return isAttacked(data, KingPos, camp);
+        }
+    }
+
+    //检查攻击别人的王
+    bool isCellAttackingKing(Data& data, const Cell& cless)
+    {
+        data.initSumiPiece();
+
+        int camp = (cless.id > 0 ? 1 : -1);
+        //const Position& pos = data.getKingPos(-camp);
+        //if (isAttacked(data, pos, -camp)) {
+            //return true;
+        //}
+        return false;
     }
 }
+
+
 
 
 
@@ -317,6 +460,7 @@ void PuGame::doSelect(Data& data, const Position& pos)
     //写入合法性棋盘
     data.initLogicPiece();
     calculateMovableArea(data, tempCell);
+    calculateAttackedArea(data, tempCell);
 }
 
 void PuGame::doReSelect(Data& data, const Position& pos)
@@ -336,6 +480,8 @@ void PuGame::doCommitMove(Data& data, const Position& pos)
     //从Source->Target移动
     const Cell Source = data.getSelectingCell();
     if (data.getLogicPiece(pos)) HandleMove::CellMoveToPos(data, Source, pos);
+    if (Source.id == 1)data.pushKingPos(pos, 1);
+    else if (Source.id == -1)data.pushKingPos(pos, -1);
     data.initLogicPiece();
     data.initSelecting();
 }
@@ -376,6 +522,21 @@ void PuGame::calculateMovableArea(Data& data, const Cell& out)
 
         break;
     default:break;
+    }
+}
+
+void PuGame::calculateAttackedArea(Data& data, const Cell& out)
+{
+
+    //筛选王白给区域
+    //if (tempCell.id == 1 || tempCell.id == -1)
+
+    int camp = out.id > 0 ? 1 : -1;
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            const Position tempPos = { i,j };
+            if (data.getLogicPiece(tempPos) && HandleAttack::isCellAttackedAtPos(data, out, tempPos))data.pushLogicPiece(tempPos, false);
+        }
     }
 }
 

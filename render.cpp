@@ -209,11 +209,10 @@ void Renderer::renderDebug()
     exCellPos = renderData.selectingCell.pos;
     swprintf(buf, 256, L"当前持有格子： ID:%d   pos:(%d,%d)", renderData.selectingCell.id, exCellPos.x, exCellPos.y);
     outtextxy(10, 70, buf);
-    /*
-    const Position& tempPos3 = data.getKingPos(1);
-    const Position& tempPos4 = data.getKingPos(-1);
-    swprintf(buf, 256, L"王的位置： Wpos:(%d , %d)   Bpos:(%d , %d)", tempPos3.x, tempPos3.y, tempPos4.x, tempPos4.y);
+
+    swprintf(buf, 256, L"王的位置： Wpos:(%d , %d)   Bpos:(%d , %d)", renderData.kingPos[0].x, renderData.kingPos[0].y, renderData.kingPos[1].x, renderData.kingPos[1].y);
     outtextxy(10, 90, buf);
+    /*
     const bool& tempBool2 = data.getKingChecked(1);
     const bool& tempBool3 = data.getKingChecked(-1);
     swprintf(buf, 256, L"王的被将军状态： Wpos:%d   Bpos:%d", tempBool2, tempBool3);

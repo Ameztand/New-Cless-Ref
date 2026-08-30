@@ -37,6 +37,8 @@ private:
 	Piece sumiPiece = {};//模拟位置
 	LogicPiece logicPiece = {};//可移动棋盘
 
+	std::array<Position, 2>KingPos = {};//白/黑王位置
+
 	Position selectingPos = Epos;//鼠标悬浮
 	Cell selectingCell = Ecell;//执棋
 
@@ -76,6 +78,11 @@ public:
 	const Cell& getSelectingCell()const;
 	const Position& getSelectingPos()const;
 	void initSelecting();
+
+	void pushKingPos(const Position& pos, const int camp);
+	const std::array<Position, 2>& getKingPos()const;
+	const Position& getKingPos(const int camp)const;
+	void initKingPos();
 
 	//每帧调用，清理意图
 	void clearIntend();

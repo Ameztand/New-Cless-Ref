@@ -61,6 +61,8 @@ public:
     void doCommitMove(Data& data, const Position& pos);
 
     void calculateMovableArea(Data& data, const Cell& out);
+
+    void calculateAttackedArea(Data& data, const Cell& out);
 };
 
 
