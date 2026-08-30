@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IGameState.h"
-#include "common.h"
+#include "config_logic.h"
 
 //´óÌü
 class Lobby :public IGameState {
@@ -49,6 +49,18 @@ public:
     void onExit(Data& data) override;
     void tick(Data& data, const IInputLayer::MsgData& out)override;
     IGameState::GameSta getID() const override;
+
+    void handleCellClick(Data& data, const Position& pos);
+
+    void doSelect(Data& data, const Position& pos);
+
+    void doReSelect(Data& data, const Position& pos);
+
+    void doCancel(Data& data);
+
+    void doCommitMove(Data& data, const Position& pos);
+
+    void calculateMovableArea(Data& data, const Cell& out);
 };
 
 

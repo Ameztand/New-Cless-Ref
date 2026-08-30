@@ -12,6 +12,7 @@ struct RenderData {
 	bool isDebug = false;//ÊÇ·ñË¢ÐÂdebug
 
 	Piece piece = {};
+	LogicPiece logicPiece = {};
 	Position selectingPos = Epos;
 	Cell selectingCell = Ecell;
 

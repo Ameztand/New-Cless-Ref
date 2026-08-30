@@ -91,8 +91,9 @@ const RenderData& Logic::pushRender()
 	tempRenderData.isDebug = data.getF1debug();
 
 	tempRenderData.piece = data.getPiece();
+	tempRenderData.logicPiece = data.getLogicPiece();
 	tempRenderData.selectingPos = data.getSelectingPos();
-	tempRenderData.selectingCell = data.getSelecting()[0];
+	tempRenderData.selectingCell = data.getSelectingCell();
 
 	tempRenderData.mosuePos = data.getMsgData().MousePos;
 

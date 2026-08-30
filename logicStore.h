@@ -37,8 +37,8 @@ private:
 	Piece sumiPiece = {};//模拟位置
 	LogicPiece logicPiece = {};//可移动棋盘
 
-	Position selectingPos = Epos;
-	std::array<Cell, 2>selecting = {};//先后点击棋子（选择，执棋）
+	Position selectingPos = Epos;//鼠标悬浮
+	Cell selectingCell = Ecell;//执棋
 
 public:
 	//游戏意图
@@ -57,20 +57,23 @@ public:
 	void pushPiece(const Piece& out);
 	void pushPiece(const Cell& out, const Position& pos);
 	const Piece& getPiece()const;
+	const Cell& getPiece(const Position& pos)const;
 	void pushSumiPiece(const Piece& out);
 	void pushSumiPiece(const Cell& out, const Position& pos);
 	const Piece& getSumiPiece()const;
+	const Cell& getSumiPiece(const Position& pos)const;
 	void pushLogicPiece(const LogicPiece& out);
-	void pushLogicPiece(const bool& out, const Position& pos);
+	void pushLogicPiece(const Position& pos, const bool& out);
 	const LogicPiece& getLogicPiece()const;
+	const bool& getLogicPiece(const Position& pos)const;
 	void initPiece();
 	void initSumiPiece();
 	void initLogicPiece();
 
 	//自动推导
-	void pushSelecting(const Cell& out);
-	void pushSelecting(const Position& out);
-	const std::array<Cell, 2>& getSelecting()const;
+	void pushSelectingCell(const Cell& out);
+	void pushSelectingPos(const Position& out);
+	const Cell& getSelectingCell()const;
 	const Position& getSelectingPos()const;
 	void initSelecting();
 

@@ -39,6 +39,11 @@ const Piece& Data::getPiece() const
 	return piece;
 }
 
+const Cell& Data::getPiece(const Position& pos) const
+{
+	return piece[pos.y][pos.x];
+}
+
 void Data::pushSumiPiece(const Piece& out)
 {
 	sumiPiece = out;
@@ -54,12 +59,17 @@ const Piece& Data::getSumiPiece() const
 	return sumiPiece;
 }
 
+const Cell& Data::getSumiPiece(const Position& pos) const
+{
+	return sumiPiece[pos.y][pos.x];
+}
+
 void Data::pushLogicPiece(const LogicPiece& out)
 {
 	logicPiece = out;
 }
 
-void Data::pushLogicPiece(const bool& out, const Position& pos)
+void Data::pushLogicPiece(const Position& pos, const bool& out)
 {
 	logicPiece[pos.y][pos.x] = out;
 }
@@ -67,6 +77,11 @@ void Data::pushLogicPiece(const bool& out, const Position& pos)
 const LogicPiece& Data::getLogicPiece() const
 {
 	return logicPiece;
+}
+
+const bool& Data::getLogicPiece(const Position& pos) const
+{
+	return logicPiece[pos.y][pos.x];
 }
 
 void Data::initPiece()
@@ -96,22 +111,19 @@ void Data::initLogicPiece()
 	logicPiece = {};
 }
 
-void Data::pushSelecting(const Cell& out)
+void Data::pushSelectingCell(const Cell& out)
 {
-	if (out == Ecell)return;
-	for (int i = 0; i < 2; i++) {
-		if (selecting[i] == Ecell)selecting[i] = out;
-	}
+	selectingCell = out;
 }
 
-void Data::pushSelecting(const Position& out)
+void Data::pushSelectingPos(const Position& out)
 {
 	selectingPos = out;
 }
 
-const std::array<Cell, 2>& Data::getSelecting() const
+const Cell& Data::getSelectingCell() const
 {
-	return selecting;
+	return selectingCell;
 }
 
 const Position& Data::getSelectingPos() const
@@ -121,7 +133,8 @@ const Position& Data::getSelectingPos() const
 
 void Data::initSelecting()
 {
-	selecting[0] = selecting[1] = Ecell;
+	selectingPos = Epos;
+	selectingCell = Ecell;
 }
 
 void Data::clearIntend()
@@ -140,5 +153,6 @@ void Data::initGameData()
 {
 	initPiece();
 	initSelecting();
+	initLogicPiece();
 	//printf("清理游戏数据\n");
 }

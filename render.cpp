@@ -110,18 +110,15 @@ void Renderer::renderPuGame()
         rectangle(PIECE_START_X + exCellPos.x * PIECE_CELL_SIZE, PIECE_START_Y + exCellPos.y * PIECE_CELL_SIZE, PIECE_START_X + (exCellPos.x + 1) * PIECE_CELL_SIZE, PIECE_START_Y + (exCellPos.y + 1) * PIECE_CELL_SIZE);
     }
 
-    /*
     //待移动格子
-    const LogicPiece& tempLogicPiece = data.getAllLogicPiece();
     setfillcolor(GREEN);
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
-            if (tempLogicPiece[j][i]) {
+            if (renderData.logicPiece[j][i]) {
                 solidcircle(PIECE_START_X + PIECE_CELL_SIZE * (i + 0.5), PIECE_START_Y + PIECE_CELL_SIZE * (j + 0.5), 5);
             }
         }
     }
-    */
 }
 
 void Renderer::renderPause()
@@ -197,16 +194,22 @@ void Renderer::renderDebug()
     swprintf(buf, 256, L"栈深：%d 栈顶ID：%d", renderData.StaDepth, renderData.gameSta);
     outtextxy(10, 10, buf);
 
-    swprintf(buf, 256, L"鼠标坐标：(%4d , %4d)", renderData.mosuePos.x, renderData.mosuePos.y);
+    swprintf(buf, 256, L"鼠标坐标：(%d,%d)", renderData.mosuePos.x, renderData.mosuePos.y);
     outtextxy(10, 30, buf);
-    /*
-    const Cell& tempCell = data.getOnePieceData(tempPos2);
-    const bool& tempBool = data.getOneLogicPiece(tempPos2);
-    swprintf(buf, 256, L"鼠标当前格子： ID:%d   pos:(%d , %d)   hasMoved:%d   LogicPiece:%d", tempCell.id, tempCell.pos.x, tempCell.pos.y, tempCell.hasMoved, tempBool);
+
+    Position exCellPos =  renderData.selectingPos;
+    int tempID = 0;
+    bool tempMovable = false;
+    if (!(exCellPos == Epos)) {
+        tempID = renderData.piece[exCellPos.y][exCellPos.x].id;
+        tempMovable = renderData.logicPiece[exCellPos.y][exCellPos.x];
+    }
+    swprintf(buf, 256, L"当前鼠标格子： ID:%d   pos:(%d,%d)   LogicPiece:%c", tempID, exCellPos.x, exCellPos.y, tempMovable ? L'T' : L'F');
     outtextxy(10, 50, buf);
-    const Cell& tempCell2 = data.getCheckedCless()[0];
-    swprintf(buf, 256, L"持有棋子： ID:%d   pos:(%d , %d)   hasMoved:%d", tempCell2.id, tempCell2.pos.x, tempCell2.pos.y, tempCell2.hasMoved);
+    exCellPos = renderData.selectingCell.pos;
+    swprintf(buf, 256, L"当前持有格子： ID:%d   pos:(%d,%d)", renderData.selectingCell.id, exCellPos.x, exCellPos.y);
     outtextxy(10, 70, buf);
+    /*
     const Position& tempPos3 = data.getKingPos(1);
     const Position& tempPos4 = data.getKingPos(-1);
     swprintf(buf, 256, L"王的位置： Wpos:(%d , %d)   Bpos:(%d , %d)", tempPos3.x, tempPos3.y, tempPos4.x, tempPos4.y);

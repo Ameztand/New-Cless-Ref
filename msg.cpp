@@ -10,7 +10,7 @@ const IInputLayer::MsgData Msg::push()
     tempData.Esc = static_cast<IInputLayer::KeySta>(keySta_[VK_ESCAPE]);
     tempData.F1 = static_cast<IInputLayer::KeySta>(keySta_[VK_F1]);
 
-    tempData.isMouseF = (mouesDown_.getPressSta() == 0 ? false : true);
+    tempData.isMouseF = (mouesDown_.getPressSta() == 1 ? true : false);
     tempData.MousePos = mousePos_;
 
     //printf("pull(%d,%d)\n", mousePos_.x, mousePos_.y);
