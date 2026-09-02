@@ -208,18 +208,12 @@ namespace HandleAttack {
                 int targetID = data.getSumiPiece(tempPos).id;
 
                 if (targetID != 0) {
-                    if (targetID * camp == -2) {//后
-                        isAttacked = true;
-                    }
+                    if (targetID * camp == -2) isAttacked = true;//后
                     if (isBias) {
-                        if (targetID * camp == -3) {//象
-                            isAttacked = true;
-                        }
+                        if (targetID * camp == -3) isAttacked = true;//象
                     }
                     else {
-                        if (targetID * camp == -5) {//车
-                            isAttacked = true;
-                        }
+                        if (targetID * camp == -5) isAttacked = true;//车
                     }
                     break;
                 }
@@ -282,7 +276,8 @@ namespace HandleAttack {
         return isAttacked;
     }
 
-    bool isAttacked(Data& data, const Position& pos, const int camp)
+    //检查pos是否被攻击(在pos被攻击的cell的camp)
+    bool isAttackedInPos(Data& data, const Position& pos, const int camp)
     {
         return isAttackedByPawn(data, pos, camp) ||
             isAttackedByKnight(data, pos, camp) ||
@@ -290,8 +285,8 @@ namespace HandleAttack {
             isAttackedByLine(data, pos, camp); // 这里内部已经包含车、象、后
     }
 
-    //检查某格是否被攻击
-    bool isCellAttackedAtPos(Data& data, const Cell& cell, const Position pos)
+    //检查cell移动到pos后王是否被攻击
+    bool isCheckedWhenCellToPos(Data& data, const Cell& cell, const Position pos)
     {
         int camp = (cell.id > 0 ? 1 : -1);
 
@@ -301,25 +296,25 @@ namespace HandleAttack {
         HandleMove::SumiCellMoveToPos(data, cell, pos);
 
         if (cell.id == camp) {//检查是否为王
-            return isAttacked(data, pos, camp);
+            return isAttackedInPos(data, pos, camp);
         }
         else {
             const Position& KingPos = data.getKingPos(camp);
-            return isAttacked(data, KingPos, camp);
+            return isAttackedInPos(data, KingPos, camp);
         }
     }
 
-    //检查攻击别人的王
-    bool isCellAttackingKing(Data& data, const Cell& cless)
+    //检查别人的王是否被攻击（返回被攻击的王）
+    const Cell& isCellAttackKing(Data& data, const Cell& cell)
     {
         data.initSumiPiece();
 
-        int camp = (cless.id > 0 ? 1 : -1);
-        //const Position& pos = data.getKingPos(-camp);
-        //if (isAttacked(data, pos, -camp)) {
-            //return true;
-        //}
-        return false;
+        int camp = (cell.id > 0 ? 1 : -1);
+        const Position& pos = data.getKingPos(-camp);
+        if (isAttackedInPos(data, pos, -camp)) {
+            return data.getPiece(pos);
+        }
+        return Ecell;
     }
 }
 
@@ -482,6 +477,11 @@ void PuGame::doCommitMove(Data& data, const Position& pos)
     if (data.getLogicPiece(pos)) HandleMove::CellMoveToPos(data, Source, pos);
     if (Source.id == 1)data.pushKingPos(pos, 1);
     else if (Source.id == -1)data.pushKingPos(pos, -1);
+
+    examCheck(data, data.getPiece(pos));
+    examCheckmate(data, Source.id > 0 ? -1 : 1);//选择对面阵营
+
+    //清理
     data.initLogicPiece();
     data.initSelecting();
 }
@@ -527,16 +527,78 @@ void PuGame::calculateMovableArea(Data& data, const Cell& out)
 
 void PuGame::calculateAttackedArea(Data& data, const Cell& out)
 {
-
-    //筛选王白给区域
-    //if (tempCell.id == 1 || tempCell.id == -1)
-
     int camp = out.id > 0 ? 1 : -1;
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             const Position tempPos = { i,j };
-            if (data.getLogicPiece(tempPos) && HandleAttack::isCellAttackedAtPos(data, out, tempPos))data.pushLogicPiece(tempPos, false);
+            if (data.getLogicPiece(tempPos) && HandleAttack::isCheckedWhenCellToPos(data, out, tempPos))data.pushLogicPiece(tempPos, false);
         }
+    }
+}
+
+void PuGame::examCheck(Data& data, const Cell& cell)
+{
+    const Cell& tempKingCell = HandleAttack::isCellAttackKing(data, cell);
+    if (tempKingCell == Ecell) {
+        int camp = cell.id > 0 ? 1 : -1;
+        const Position& KingPos = data.getKingPos(-camp);//对面的王
+        if (HandleAttack::isAttackedInPos(data, KingPos, -camp)) {//对面的王
+            //受到间接攻击
+            data.pushKingChecked(data.getPiece(KingPos));
+        }
+        else {
+            //没有收到攻击
+            data.initKingChecked();
+        }
+    }
+    else {
+        //直接将军
+        data.pushKingChecked(tempKingCell);
+    }
+}
+
+void PuGame::examCheckmate(Data& data, const int camp)
+{
+
+    bool hasSolut = false;
+
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            const Position tempPos = { i,j };
+            const Cell& tempCell = data.getPiece(tempPos);
+            if (tempCell.id * camp > 0) {
+                data.initLogicPiece();
+                calculateMovableArea(data, tempCell);
+                calculateAttackedArea(data, tempCell);//已经筛选了白给和垫将
+
+                //遍历是否存在可移动位置
+                for (int ii = 0; ii < 8; ii++) {
+                    for (int jj = 0; jj < 8; jj++) {
+                        const Position tempPos2 = { ii,jj };
+                        hasSolut = data.getLogicPiece(tempPos2);
+                        if (hasSolut)break;
+                    }
+                    if (hasSolut)break;
+                }
+            }
+            if (hasSolut)break;
+        }
+        if (hasSolut)break;
+    }
+
+    if (!hasSolut) {
+        if (data.getKingChecked().id != 0) {
+            printf("无解\n");
+            data.pushCheckmate(camp);
+        }
+        else {
+            printf("和棋\n");
+            data.initCheckmate();
+        }
+    }
+    else {
+        //没将死
+        data.initCheckmate();
     }
 }
 

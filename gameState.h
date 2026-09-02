@@ -63,6 +63,10 @@ public:
     void calculateMovableArea(Data& data, const Cell& out);
 
     void calculateAttackedArea(Data& data, const Cell& out);
+
+    void examCheck(Data& data, const Cell& cell);
+
+    void examCheckmate(Data& data, const int camp);
 };
 
 

@@ -38,6 +38,8 @@ private:
 	LogicPiece logicPiece = {};//可移动棋盘
 
 	std::array<Position, 2>KingPos = {};//白/黑王位置
+	Cell KingChecked = Ecell;//被将军的王
+	int checkmate = 0;//将死（-1表示黑方被将死，1表示白方）
 
 	Position selectingPos = Epos;//鼠标悬浮
 	Cell selectingCell = Ecell;//执棋
@@ -72,17 +74,27 @@ public:
 	void initSumiPiece();
 	void initLogicPiece();
 
-	//自动推导
+	//鼠标悬浮pos，执棋cell
 	void pushSelectingCell(const Cell& out);
 	void pushSelectingPos(const Position& out);
 	const Cell& getSelectingCell()const;
 	const Position& getSelectingPos()const;
 	void initSelecting();
 
+	//王的坐标
 	void pushKingPos(const Position& pos, const int camp);
 	const std::array<Position, 2>& getKingPos()const;
 	const Position& getKingPos(const int camp)const;
 	void initKingPos();
+
+	//被将军的王
+	void pushKingChecked(const Cell& out);
+	const Cell& getKingChecked()const;
+	void initKingChecked();
+
+	void pushCheckmate(const int camp);
+	const int getCheckmate()const;
+	void initCheckmate();
 
 	//每帧调用，清理意图
 	void clearIntend();

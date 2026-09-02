@@ -16,7 +16,9 @@ struct RenderData {
 	Position selectingPos = Epos;
 	Cell selectingCell = Ecell;
 
-	std::array<Position, 2>kingPos = {};
+	std::array<Position, 2>KingPos = {};
+	Cell KingChecked = Ecell;
+	int checkmate = 0;
 
 	Position mosuePos = Epos;
 };

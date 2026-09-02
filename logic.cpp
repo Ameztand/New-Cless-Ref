@@ -95,7 +95,9 @@ const RenderData& Logic::pushRender()
 	tempRenderData.selectingPos = data.getSelectingPos();
 	tempRenderData.selectingCell = data.getSelectingCell();
 
-	tempRenderData.kingPos = data.getKingPos();
+	tempRenderData.KingPos = data.getKingPos();
+	tempRenderData.KingChecked = data.getKingChecked();
+	tempRenderData.checkmate = data.getCheckmate();
 
 	tempRenderData.mosuePos = data.getMsgData().MousePos;
 

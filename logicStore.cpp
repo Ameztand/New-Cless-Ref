@@ -160,6 +160,36 @@ void Data::initKingPos()
 	KingPos[1] = { 4,0 };
 }
 
+void Data::pushKingChecked(const Cell& out)
+{
+	if (KingChecked == Ecell)KingChecked = out;
+}
+
+const Cell& Data::getKingChecked() const
+{
+	return KingChecked;
+}
+
+void Data::initKingChecked()
+{
+	KingChecked = Ecell;
+}
+
+void Data::pushCheckmate(const int camp)
+{
+	checkmate = camp;
+}
+
+const int Data::getCheckmate() const
+{
+	return checkmate;
+}
+
+void Data::initCheckmate()
+{
+	checkmate = 0;
+}
+
 void Data::clearIntend()
 {
 	gameIntend = {};
@@ -179,5 +209,8 @@ void Data::initGameData()
 	initLogicPiece();
 
 	initKingPos();
+	initKingChecked();
+
+	initCheckmate();
 	//printf("清理游戏数据\n");
 }
