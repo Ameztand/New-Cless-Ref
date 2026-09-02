@@ -26,6 +26,8 @@ public:
 	//渲染双人
 	void renderPuGame();
 
+	void renderGG();
+
 	//渲染暂停
 	void renderPause();
 

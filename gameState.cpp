@@ -91,109 +91,6 @@ namespace HandleMove {
     }
 }
 
-namespace calculateMovable{
-    enum Sta :uint8_t {
-        Straight,//0表示直线
-        Diagonal
-    };
-
-    void Line(Data& data, const Cell& newCC, const Sta dir)
-    {
-        const Position newClessPos = newCC.pos;
-        const int newClessID = newCC.id;
-        Position tempPos = Epos;
-
-        for (int i = dir; i < 8; i += 2) {//dir==0表示直线
-            tempPos = newClessPos;
-            while (true) {
-                tempPos = PosOffset::posMoveNormal(tempPos, i);
-                //出界检查
-                if (tempPos == Epos)break;
-
-                int temp = data.getPiece(tempPos).id * newClessID;
-                if (temp <= 0)data.pushLogicPiece(tempPos, true);
-                if (temp != 0) break;//撞到Cell退出
-            }
-        }
-    }
-
-    void King(Data& data, const Cell& newCC)
-    {
-        Position newClessPos = newCC.pos;
-        int newClessID = newCC.id;
-
-        Position tempPos = Epos;
-        int camp = (newClessID > 0) ? 1 : -1;
-        for (int i = 0; i < 8; i++) {
-            tempPos = PosOffset::posMoveNormal(newClessPos, i);
-            if (!(tempPos == Epos)) {
-                //没有将军检查
-                if (data.getPiece(tempPos).id * newClessID <= 0) {
-                    data.pushLogicPiece(tempPos, true);
-                }
-            }
-        }
-        //王车易位
-    }
-
-    void Knight(Data& data, const Cell& newCC)
-    {
-        Position newClessPos = newCC.pos;
-        int newClessID = newCC.id;
-
-        Position tempPos = Epos;
-        for (int i = 0; i < 8; i++) {
-            tempPos = PosOffset::posMoveKnight(newClessPos, i);//
-            if (!(tempPos == Epos)) {
-                if (data.getPiece(tempPos).id * newClessID <= 0) {
-                    data.pushLogicPiece(tempPos, true);
-                }
-            }
-        }
-    }
-
-    void Pawn(Data& data, const Cell& newCC)
-    {
-        Position newClessPos = newCC.pos;
-        int newClessID = newCC.id;
-
-        Position tempPos = Epos;
-
-        //移动
-        const int camp = (newClessID > 0) ? 1 : -1;
-        tempPos = PosOffset::posMoveNormal(newClessPos, 2 - 2 * camp);
-        if (!(tempPos == Epos)) {
-            if (data.getPiece(tempPos).id == 0) {
-                data.pushLogicPiece(tempPos, true);
-                //第二步
-                tempPos = PosOffset::posMoveNormal(tempPos, 2 - 2 * camp);
-                if (newClessPos.y == (camp == -1 ? 1 : 6) && data.getPiece(tempPos).id == 0) {
-                    data.pushLogicPiece(tempPos, true);
-                }
-            }
-        }
-        //吃子
-        tempPos = PosOffset::posMoveNormal(newClessPos, 6 + camp);//左
-        if (!(tempPos == Epos)) {
-            if (data.getPiece(tempPos).id * newClessID < 0) {
-                data.pushLogicPiece(tempPos, true);
-            }
-        }
-        tempPos = PosOffset::posMoveNormal(newClessPos, 2 - camp);//右
-        if (!(tempPos == Epos)) {
-            if (data.getPiece(tempPos).id * newClessID < 0) {
-                data.pushLogicPiece(tempPos, true);
-            }
-        }
-        //过路兵
-
-        //升变
-        /*
-        这部分还没写，和时序有关
-        */
-    }
-}
-
 namespace HandleAttack {
     bool isAttackedByLine(Data& data, const Position& pos, const int camp)
     {
@@ -318,6 +215,138 @@ namespace HandleAttack {
     }
 }
 
+namespace calculateMovable{
+    enum Sta :uint8_t {
+        Straight,//0表示直线
+        Diagonal
+    };
+
+    void Line(Data& data, const Cell& newCC, const Sta dir)
+    {
+        const Position newClessPos = newCC.pos;
+        const int newClessID = newCC.id;
+        Position tempPos = Epos;
+
+        for (int i = dir; i < 8; i += 2) {//dir==0表示直线
+            tempPos = newClessPos;
+            while (true) {
+                tempPos = PosOffset::posMoveNormal(tempPos, i);
+                //出界检查
+                if (tempPos == Epos)break;
+
+                int temp = data.getPiece(tempPos).id * newClessID;
+                if (temp <= 0)data.pushLogicPiece(tempPos, true);
+                if (temp != 0) break;//撞到Cell退出
+            }
+        }
+    }
+
+    void King(Data& data, const Cell& newCC)
+    {
+        Position newClessPos = newCC.pos;
+        int newClessID = newCC.id;
+
+        Position tempPos = Epos;
+        int camp = (newClessID > 0) ? 1 : -1;
+        for (int i = 0; i < 8; i++) {
+            tempPos = PosOffset::posMoveNormal(newClessPos, i);
+            if (!(tempPos == Epos)) {
+                //没有将军检查
+                if (data.getPiece(tempPos).id * newClessID <= 0) {
+                    data.pushLogicPiece(tempPos, true);
+                }
+            }
+        }
+
+        //王车易位
+        const Position KingPos= data.getKingPos(camp);
+        
+
+        auto caslting = [&](Data& data, int i) {
+            if (!data.getCanCastling(camp))return;
+            int dir[2] = { 6,2 };
+            Position pos = KingPos;
+            while (true) {
+                pos = PosOffset::posMoveNormal(pos, dir[i]);//方向
+                //printf("检查(%d,%d)\n", pos.x, pos.y);
+                if (pos == Epos)break;
+                if (data.getPiece(pos).id * camp == 5) {//id为车
+                    //王车易位
+                    const Position tempPos2 = { KingPos.x + i * 4 - 2,KingPos.y };
+                    //printf("发现(%d,%d)可以移位\n", tempPos2.x, tempPos2.y);
+                    data.pushLogicPiece(tempPos2, true);
+                }
+                else {
+                    if (data.getPiece(pos).id != 0 || HandleAttack::isAttackedInPos(data, pos, camp))break;//被攻击或者非空就退出
+                }
+            }
+        };
+
+        caslting(data, 0);//左
+        caslting(data, 1);//右
+        
+    }
+
+    void Knight(Data& data, const Cell& newCC)
+    {
+        Position newClessPos = newCC.pos;
+        int newClessID = newCC.id;
+
+        Position tempPos = Epos;
+        for (int i = 0; i < 8; i++) {
+            tempPos = PosOffset::posMoveKnight(newClessPos, i);//
+            if (!(tempPos == Epos)) {
+                if (data.getPiece(tempPos).id * newClessID <= 0) {
+                    data.pushLogicPiece(tempPos, true);
+                }
+            }
+        }
+    }
+
+    void Pawn(Data& data, const Cell& newCC)
+    {
+        Position newClessPos = newCC.pos;
+        int newClessID = newCC.id;
+
+        Position tempPos = Epos;
+
+        //移动
+        const int camp = (newClessID > 0) ? 1 : -1;
+        tempPos = PosOffset::posMoveNormal(newClessPos, 2 - 2 * camp);
+        if (!(tempPos == Epos)) {
+            if (data.getPiece(tempPos).id == 0) {
+                data.pushLogicPiece(tempPos, true);
+                //第二步
+                tempPos = PosOffset::posMoveNormal(tempPos, 2 - 2 * camp);
+                if (newClessPos.y == (camp == -1 ? 1 : 6) && data.getPiece(tempPos).id == 0) {
+                    data.pushLogicPiece(tempPos, true);
+                }
+            }
+        }
+        //吃子
+        tempPos = PosOffset::posMoveNormal(newClessPos, 6 + camp);//左
+        if (!(tempPos == Epos)) {
+            if (data.getPiece(tempPos).id * newClessID < 0) {
+                data.pushLogicPiece(tempPos, true);
+            }
+        }
+        tempPos = PosOffset::posMoveNormal(newClessPos, 2 - camp);//右
+        if (!(tempPos == Epos)) {
+            if (data.getPiece(tempPos).id * newClessID < 0) {
+                data.pushLogicPiece(tempPos, true);
+            }
+        }
+        //过路兵
+
+        //升变
+        /*
+        这部分还没写，和时序有关
+        */
+    }
+}
+
+
+
 
 
 
@@ -393,7 +422,7 @@ void PuGame::tick(Data& data, const IInputLayer::MsgData& out)
     //鼠标悬浮坐标对应的棋子坐标
     const Position tempSelectingPos = HandleInput::mousePosToPiecePos(out.MousePos);
     data.pushSelectingPos(tempSelectingPos);
-    if (out.isMouseF && HandleInput::Clickbotton(Parea, out.MousePos)) {
+    if (out.isMouseF && HandleInput::Clickbotton(Parea, out.MousePos) && data.getCheckmate() == 0) {
         handleCellClick(data, tempSelectingPos);
 
         //printf("(%d,%d)->(%d,%d)\n", data.getSelectingCell(0).pos.x, data.getSelectingCell(0).pos.y, data.getSelectingCell(1).pos.x, data.getSelectingCell(1).pos.y);
@@ -472,12 +501,28 @@ void PuGame::doCancel(Data& data)
 
 void PuGame::doCommitMove(Data& data, const Position& pos)
 {
-    //从Source->Target移动
     const Cell Source = data.getSelectingCell();
-    if (data.getLogicPiece(pos)) HandleMove::CellMoveToPos(data, Source, pos);
-    if (Source.id == 1)data.pushKingPos(pos, 1);
-    else if (Source.id == -1)data.pushKingPos(pos, -1);
+    const int camp = Source.id > 0 ? 1 : -1;
 
+    //从Source->Target移动
+    if (data.getLogicPiece(pos)) HandleMove::CellMoveToPos(data, Source, pos);
+    if (Source.id == camp)data.pushKingPos(pos, camp);
+
+    //王车易位车移动
+    const Position& newKingPos = data.getKingPos(camp);
+    if (data.getCanCastling(camp)) {
+        int dir[2] = { 7,0 };//白黑
+        int i = (camp == 1) ? dir[0] : dir[1];
+
+        //printf("(%d,%d)\n", newKingPos.x, newKingPos.y);
+        if (newKingPos.x == 2) HandleMove::CellMoveToPos(data, data.getPiece({ 0,i }), { 3,i });
+        else if (newKingPos.x == 6) HandleMove::CellMoveToPos(data, data.getPiece({ 7,i }), { 5,i });
+    }
+    //消除王车易位标识符
+    if (Source.id == camp || Source.id == 5 * camp) data.pushCanCastling(false, camp);
+
+
+    //要调整到tick？
     examCheck(data, data.getPiece(pos));
     examCheckmate(data, Source.id > 0 ? -1 : 1);//选择对面阵营
 

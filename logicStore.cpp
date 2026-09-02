@@ -137,6 +137,23 @@ void Data::initSelecting()
 	selectingCell = Ecell;
 }
 
+void Data::pushCanCastling(const bool p, const int camp)
+{
+	int i = camp > 0 ? 0 : 1;
+	CanCastling[i] = p;
+}
+
+const bool Data::getCanCastling(const int camp)
+{
+	int i = camp > 0 ? 0 : 1;
+	return CanCastling[i];
+}
+
+void Data::initCanCastling()
+{
+	CanCastling[0] = CanCastling[1] = true;
+}
+
 void Data::pushKingPos(const Position& pos, const int camp)
 {
 	int i = (camp == 1 ? 0 : 1);
@@ -212,5 +229,6 @@ void Data::initGameData()
 	initKingChecked();
 
 	initCheckmate();
+	initCanCastling();
 	//printf("清理游戏数据\n");
 }

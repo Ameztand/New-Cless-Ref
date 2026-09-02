@@ -121,6 +121,18 @@ void Renderer::renderPuGame()
     }
 }
 
+void Renderer::renderGG()
+{
+    setbkmode(TRANSPARENT);//TRANSPARENT
+
+    settextcolor(BLACK);
+    settextstyle(160, 0, L"宋体");
+    outtextxy(180, 270, L"GAME OVER");
+    settextstyle(16, 0, L"宋体");
+ 
+    //setbkmode(OPAQUE);//TRANSPARENT
+}
+
 void Renderer::renderPause()
 {
     //背景板
@@ -213,7 +225,7 @@ void Renderer::renderDebug()
     swprintf(buf, 256, L"王的位置： Wpos:(%d , %d)   Bpos:(%d , %d)", renderData.KingPos[0].x, renderData.KingPos[0].y, renderData.KingPos[1].x, renderData.KingPos[1].y);
     outtextxy(10, 90, buf);
 
-    swprintf(buf, 256, L"被将军的王： %d    被将死的王： %d", renderData.KingChecked.id,renderData.checkmate);
+    swprintf(buf, 256, L"被将军的王： %d    被将死的王： %d    是否允许移位WB: %d%d", renderData.KingChecked.id, renderData.checkmate, renderData.CanCastling[0], renderData.CanCastling[1]);
     outtextxy(10, 110, buf);
 
 
@@ -245,13 +257,16 @@ void Renderer::render(const RenderData& out)
             break;
         }
 
+        if (out.checkmate != 0)renderGG();
         renderPause();
         break;
     case GameSta::PuGame:
         renderPuGame();
+        if (out.checkmate != 0)renderGG();
         break;
     }
 
+    
     if (out.isDebug)renderDebug();
 
     EndBatchDraw();     // 结束批量绘图，一次性显示所有内容

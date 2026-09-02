@@ -37,6 +37,8 @@ private:
 	Piece sumiPiece = {};//模拟位置
 	LogicPiece logicPiece = {};//可移动棋盘
 
+	std::array<bool, 2>CanCastling = {};//允许王车易位(白黑)
+
 	std::array<Position, 2>KingPos = {};//白/黑王位置
 	Cell KingChecked = Ecell;//被将军的王
 	int checkmate = 0;//将死（-1表示黑方被将死，1表示白方）
@@ -80,6 +82,11 @@ public:
 	const Cell& getSelectingCell()const;
 	const Position& getSelectingPos()const;
 	void initSelecting();
+
+	//王车易位
+	void pushCanCastling(const bool p, const int camp);
+	const bool getCanCastling(const int camp);
+	void initCanCastling();
 
 	//王的坐标
 	void pushKingPos(const Position& pos, const int camp);
