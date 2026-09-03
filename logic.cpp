@@ -90,12 +90,15 @@ const RenderData& Logic::pushRender()
 	tempRenderData.StaDepth = gameSta.getStaDepth();
 	tempRenderData.isDebug = data.getF1debug();
 
+	tempRenderData.bout = data.getBout();
+
 	tempRenderData.piece = data.getPiece();
 	tempRenderData.logicPiece = data.getLogicPiece();
 	tempRenderData.selectingPos = data.getSelectingPos();
 	tempRenderData.selectingCell = data.getSelectingCell();
 
 	tempRenderData.passedPawn = data.getPassedPawn();
+	tempRenderData.promotion = data.getPromotion();
 	tempRenderData.CanCastling = { data.getCanCastling(1), data.getCanCastling(-1) };//´«µÝÁÐ±í
 
 	tempRenderData.KingPos = data.getKingPos();

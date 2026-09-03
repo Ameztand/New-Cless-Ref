@@ -31,13 +31,14 @@ private:
 	bool F1debug = false;
 	bool prveF1debug = false;
 
-
+	int bout = 1;//回合
 
 	Piece piece = {};//真实位置
 	Piece sumiPiece = {};//模拟位置
 	LogicPiece logicPiece = {};//可移动棋盘
 
 	Cell passedPawn = Ecell;//公用一个
+	Cell promotion = Ecell;//升变
 	std::array<bool, 2>CanCastling = {};//允许王车易位(白黑)
 
 	std::array<Position, 2>KingPos = {};//白/黑王位置
@@ -108,6 +109,15 @@ public:
 	void pushPassedPawn(const Cell& out);
 	const Cell& getPassedPawn()const;
 	void initPassedPawn();
+	//升变
+	void pushPromotion(const Cell& out);
+	const Cell& getPromotion()const;
+	void initPromotion();
+
+	//回合
+	void updataBout();
+	const int getBout();
+	void initBout();
 
 	//每帧调用，清理意图
 	void clearIntend();

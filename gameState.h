@@ -52,6 +52,8 @@ public:
 
     void handleCellClick(Data& data, const Position& pos);
 
+    void handlePromotion(Data& data, const IInputLayer::MsgData& out);
+
     void doSelect(Data& data, const Position& pos);
 
     void doReSelect(Data& data, const Position& pos);

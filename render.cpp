@@ -94,10 +94,12 @@ void Renderer::renderPuGame()
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             Position temp = { i,j };//棋盘[x][y]
-            if (temp == exCellPos)continue;
+            if (temp == exCellPos && renderData.promotion == Ecell)continue;//无升变就正常跳过高亮
             renderCell(temp);
         }
     }
+
+    if (!(renderData.promotion == Ecell))return;//如果升变则跳过高亮和待移动
 
     //高亮选择
     if (!(exCellPos == Epos)) {
@@ -134,6 +136,71 @@ void Renderer::renderGG()
     settextstyle(16, 0, L"宋体");
  
     //setbkmode(OPAQUE);//TRANSPARENT
+}
+
+void Renderer::renderPromotion()
+{
+    const Cell& tempCell = renderData.promotion;
+    if (tempCell == Ecell)return;
+
+    const Position& tempPos = { tempCell.pos.x * 370 / 7 + 10,tempCell.pos.y * PIECE_CELL_SIZE + 8 };//10->380
+
+    // 格子颜色
+    for (int i = 0; i < 4; i++) {
+        setfillcolor(colors[(i % 2) ? 1 : 0]);
+        solidrectangle(tempPos.x + i * PIECE_CELL_SIZE, tempPos.y, tempPos.x + (i + 1) * PIECE_CELL_SIZE, tempPos.y + PIECE_CELL_SIZE);
+    }
+
+    // 网格线
+    setlinecolor(BLUE);
+    setlinestyle(PS_SOLID, 4);
+    for (int i = 0; i <= 4; i++) {
+        line(tempPos.x, tempPos.y, tempPos.x + PIECE_CELL_SIZE * 4, tempPos.y);
+        line(tempPos.x, tempPos.y + PIECE_CELL_SIZE, tempPos.x + PIECE_CELL_SIZE * 4, tempPos.y + PIECE_CELL_SIZE);
+        line(tempPos.x + PIECE_CELL_SIZE * i, tempPos.y, tempPos.x + PIECE_CELL_SIZE * i, tempPos.y + PIECE_CELL_SIZE);
+    }
+
+    //棋子
+    for (int i = 0; i < 4; i++) {
+        int camp = tempCell.id > 0 ? 1 : -1;
+        const wchar_t* ch = pieceChar[(i + 2) * camp + 6];
+        settextstyle(48, 0, L"Segoe UI Symbol");
+        if (tempPos.x + PIECE_CELL_SIZE * i < renderData.mosuePos.x && renderData.mosuePos.x < tempPos.x + PIECE_CELL_SIZE * (1 + i) && tempPos.y < renderData.mosuePos.y && renderData.mosuePos.y < tempPos.y + PIECE_CELL_SIZE) {
+            settextstyle(64, 0, L"Segoe UI Symbol");
+            //高亮边框
+            setlinecolor(RGB(255, 255, 0));
+            setlinestyle(PS_SOLID, 5);
+            rectangle(tempPos.x + PIECE_CELL_SIZE * i, tempPos.y, tempPos.x + PIECE_CELL_SIZE * (1 + i), tempPos.y + PIECE_CELL_SIZE);
+        }
+        int x = tempPos.x + (PIECE_CELL_SIZE - textwidth(ch)) / 2 + PIECE_CELL_SIZE * i;
+        int y = tempPos.y + (PIECE_CELL_SIZE - textheight(ch)) / 2;
+        outtextxy(x, y, ch);
+    }
+}
+
+void Renderer::renderBout()
+{
+    if (renderData.bout == -1)setfillcolor(BLACK);
+    else setfillcolor(WHITE);
+    solidrectangle(850, 310, 950, 410);
+
+    setlinecolor(RGB(255, 255, 0));
+    setlinestyle(PS_SOLID, 7);
+    rectangle(850, 310, 950, 410);
+
+
+    setbkmode(TRANSPARENT);
+    if (renderData.bout == 1) {
+        settextstyle(30, 0, L"宋体");
+        settextcolor(BLACK);
+        outtextxy(870, 346, L"白方");
+    }
+    else {
+        settextstyle(30, 0, L"宋体");
+        settextcolor(WHITE);
+        outtextxy(870, 346, L"黑方");
+    }
+    setbkmode(OPAQUE);//TRANSPARENT
 }
 
 void Renderer::renderPause()
@@ -257,18 +324,24 @@ void Renderer::render(const RenderData& out)
         break;
     case GameSta::Pause:
         //背景板
+        renderBout();
         switch (prveGameSta) {
         case GameSta::PuGame:
             renderPuGame();
             break;
         }
 
+        renderPromotion();
         if (out.checkmate != 0)renderGG();
         renderPause();
+
         break;
     case GameSta::PuGame:
+        renderBout();
         renderPuGame();
+        renderPromotion();
         if (out.checkmate != 0)renderGG();
+
         break;
     }
 

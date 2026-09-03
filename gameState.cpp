@@ -434,10 +434,15 @@ void PuGame::tick(Data& data, const IInputLayer::MsgData& out)
     //鼠标悬浮坐标对应的棋子坐标
     const Position tempSelectingPos = HandleInput::mousePosToPiecePos(out.MousePos);
     data.pushSelectingPos(tempSelectingPos);
-    if (out.isMouseF && HandleInput::Clickbotton(Parea, out.MousePos) && data.getCheckmate() == 0) {
-        handleCellClick(data, tempSelectingPos);
-
-        //printf("(%d,%d)->(%d,%d)\n", data.getSelectingCell(0).pos.x, data.getSelectingCell(0).pos.y, data.getSelectingCell(1).pos.x, data.getSelectingCell(1).pos.y);
+    if (data.getPromotion() == Ecell) {
+        //普通
+        if (out.isMouseF && HandleInput::Clickbotton(Parea, out.MousePos) && data.getCheckmate() == 0) {
+            handleCellClick(data, tempSelectingPos);
+        }
+    }
+    else {
+        //升变
+        handlePromotion(data, out);
     }
 }
 
@@ -489,9 +494,38 @@ void PuGame::handleCellClick(Data& data, const Position& pos)
     }
 }
 
+void PuGame::handlePromotion(Data& data, const IInputLayer::MsgData& out)
+{
+    //升变选择
+    const Cell tempCell = data.getPromotion();
+    const Position tempPos = { tempCell.pos.x * 370 / 7 + 10,tempCell.pos.y * PIECE_CELL_SIZE + 8 };//10->380
+    for (int i = 0; i < 4; i++) {
+        //升变选择区域（抄render的）
+        RECT tempArea = { tempPos.x + PIECE_CELL_SIZE * i, tempPos.y, tempPos.x + PIECE_CELL_SIZE * (1 + i), tempPos.y + PIECE_CELL_SIZE };
+        //检查点击
+        if (out.isMouseF && HandleInput::Clickbotton(tempArea, out.MousePos)) {
+            Cell tempCellpro = Ecell;
+            tempCellpro.pos = tempCell.pos;
+            tempCellpro.id = tempCell.id > 0 ? 2 + i : -2 - i;
+            data.pushPiece(tempCellpro, tempCellpro.pos);
+            data.initPromotion();
+
+            //屎山生成ing//又莫名其妙的好了为什么？
+            //data.pushSelectingCell(tempCellpro);
+            //doCommitMove(data, tempCellpro.pos);
+
+            examCheck(data, data.getPiece(tempCellpro.pos));
+            examCheckmate(data, tempCellpro.id > 0 ? -1 : 1);//选择对面阵营
+            data.initLogicPiece();
+        }
+    }
+}
+
 void PuGame::doSelect(Data& data, const Position& pos)
 {
     const Cell& tempCell = data.getPiece(pos);
+    if (tempCell.id * data.getBout() <= 0)return;
+
     data.pushSelectingCell(tempCell);
     //写入合法性棋盘
     data.initLogicPiece();
@@ -517,69 +551,84 @@ void PuGame::doCommitMove(Data& data, const Position& pos)
     const int camp = Source.id > 0 ? 1 : -1;
 
     //从Source->Target移动(传参pos就是Target)
-    if (data.getLogicPiece(pos)) HandleMove::CellMoveToPos(data, Source, pos);
+    bool move = false;
+    if (data.getLogicPiece(pos)) {
+        HandleMove::CellMoveToPos(data, Source, pos);
+        move = true;
+    }
     if (Source.id == camp)data.pushKingPos(pos, camp);
 
-    //王车易位车移动
-    const Position& newKingPos = data.getKingPos(camp);
-    if (data.getCanCastling(camp)) {
-        int dir[2] = { 7,0 };//白黑
-        int i = (camp == 1) ? dir[0] : dir[1];
+    if (move) {
+        //王车易位车移动
+        const Position& newKingPos = data.getKingPos(camp);
+        if (data.getCanCastling(camp)) {
+            int dir[2] = { 7,0 };//白黑
+            int i = (camp == 1) ? dir[0] : dir[1];
 
-        //printf("(%d,%d)\n", newKingPos.x, newKingPos.y);
-        if (newKingPos.x == 2) HandleMove::CellMoveToPos(data, data.getPiece({ 0,i }), { 3,i });
-        else if (newKingPos.x == 6) HandleMove::CellMoveToPos(data, data.getPiece({ 7,i }), { 5,i });
-    }
-    //消除王车易位标识符
-    if (Source.id == camp || Source.id == 5 * camp) data.pushCanCastling(false, camp);
-
-    //过路兵标识-add
-    if (Source.id == 6 && Source.pos.y == 6 && pos.y == 4) {
-        Cell tempPPCell = Source;
-        tempPPCell.pos.y = 5;
-        data.pushPassedPawn(tempPPCell);
-        printf("添加（%d,%d）\n", tempPPCell.pos.x, tempPPCell.pos.y);
-    }
-    else if (Source.id == -6 && Source.pos.y == 1 && pos.y == 3) {
-        Cell tempPPCell = Source;
-        tempPPCell.pos.y = 2;
-        data.pushPassedPawn(tempPPCell);
-        printf("添加（%d,%d）\n", tempPPCell.pos.x, tempPPCell.pos.y);
-    }
-    else {
-        //过路兵标识-remove
-        if (Source.id == 6 && pos == data.getPassedPawn().pos) {
-            Cell tempPPCell = data.getPassedPawn();
-            tempPPCell.pos.y++;
-            tempPPCell.id = 0;
-            data.pushPiece(tempPPCell, tempPPCell.pos);
-            //data.initPassedPawn();
-            printf("清理（%d,%d）\n", tempPPCell.pos.x, tempPPCell.pos.y);
+            //printf("(%d,%d)\n", newKingPos.x, newKingPos.y);
+            if (newKingPos.x == 2) HandleMove::CellMoveToPos(data, data.getPiece({ 0,i }), { 3,i });
+            else if (newKingPos.x == 6) HandleMove::CellMoveToPos(data, data.getPiece({ 7,i }), { 5,i });
         }
-        else if (Source.id == -6 && pos == data.getPassedPawn().pos) {
-            Cell tempPPCell = data.getPassedPawn();
-            tempPPCell.pos.y--;
-            tempPPCell.id = 0;
-            data.pushPiece(tempPPCell, tempPPCell.pos);
-            //data.initPassedPawn();
-            printf("清理（%d,%d）\n", tempPPCell.pos.x, tempPPCell.pos.y);
+        //消除王车易位标识符
+        if (Source.id == camp || Source.id == 5 * camp) data.pushCanCastling(false, camp);
+
+        //过路兵标识-add
+        if (Source.id == 6 && Source.pos.y == 6 && pos.y == 4) {
+            Cell tempPPCell = Source;
+            tempPPCell.pos.y = 5;
+            data.pushPassedPawn(tempPPCell);
+            printf("添加（%d,%d）\n", tempPPCell.pos.x, tempPPCell.pos.y);
+        }
+        else if (Source.id == -6 && Source.pos.y == 1 && pos.y == 3) {
+            Cell tempPPCell = Source;
+            tempPPCell.pos.y = 2;
+            data.pushPassedPawn(tempPPCell);
+            printf("添加（%d,%d）\n", tempPPCell.pos.x, tempPPCell.pos.y);
         }
         else {
-            printf("默认清理\n");
+            //过路兵标识-remove
+            if (Source.id == 6 && pos == data.getPassedPawn().pos) {
+                Cell tempPPCell = data.getPassedPawn();
+                tempPPCell.pos.y++;
+                tempPPCell.id = 0;
+                data.pushPiece(tempPPCell, tempPPCell.pos);
+                //printf("清理（%d,%d）\n", tempPPCell.pos.x, tempPPCell.pos.y);
+            }
+            else if (Source.id == -6 && pos == data.getPassedPawn().pos) {
+                Cell tempPPCell = data.getPassedPawn();
+                tempPPCell.pos.y--;
+                tempPPCell.id = 0;
+                data.pushPiece(tempPPCell, tempPPCell.pos);
+                //printf("清理（%d,%d）\n", tempPPCell.pos.x, tempPPCell.pos.y);
+            }
+            else {
+                //printf("默认清理\n");
+            }
+
+            data.initPassedPawn();
         }
 
-        data.initPassedPawn();
+        //小兵升变
+        if ((Source.id == 6 && pos.y == 0) || (Source.id == -6 && pos.y == 7)) {
+            data.pushPromotion(data.getPiece(pos));
+        }
+        else {
+            data.initPromotion();//临时
+        }
+
+
+
+        //要调整到tick？
+        examCheck(data, data.getPiece(pos));
+        examCheckmate(data, Source.id > 0 ? -1 : 1);//选择对面阵营
+
+        //清理
+        data.initLogicPiece();
+        data.initSelecting();
+
+        //更新回合
+        data.updataBout();
     }
-    
-
-
-    //要调整到tick？
-    examCheck(data, data.getPiece(pos));
-    examCheckmate(data, Source.id > 0 ? -1 : 1);//选择对面阵营
-
-    //清理
-    data.initLogicPiece();
-    data.initSelecting();
 }
 
 void PuGame::calculateMovableArea(Data& data, const Cell& out)

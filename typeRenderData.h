@@ -11,12 +11,15 @@ struct RenderData {
 	int StaDepth = 0;
 	bool isDebug = false;//是否刷新debug
 
+	int bout = 1;//回合
+
 	Piece piece = {};
 	LogicPiece logicPiece = {};
 	Position selectingPos = Epos;
 	Cell selectingCell = Ecell;
 
 	Cell passedPawn = Ecell;
+	Cell promotion = Ecell;//升变
 	std::array<bool, 2>CanCastling = {};
 
 	std::array<Position, 2>KingPos = {};

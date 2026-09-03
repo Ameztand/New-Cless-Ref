@@ -27,6 +27,8 @@ public:
 	void renderPuGame();
 
 	void renderGG();
+	void renderPromotion();
+	void renderBout();
 
 	//渲染暂停
 	void renderPause();

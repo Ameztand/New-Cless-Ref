@@ -222,6 +222,36 @@ void Data::initPassedPawn()
 	passedPawn = Ecell;
 }
 
+void Data::pushPromotion(const Cell& out)
+{
+	promotion = out;
+}
+
+const Cell& Data::getPromotion() const
+{
+	return promotion;
+}
+
+void Data::initPromotion()
+{
+	promotion = Ecell;
+}
+
+void Data::updataBout()
+{
+	bout = -bout;
+}
+
+const int Data::getBout()
+{
+	return bout;
+}
+
+void Data::initBout()
+{
+	bout = 1;
+}
+
 void Data::clearIntend()
 {
 	gameIntend = {};
@@ -247,5 +277,6 @@ void Data::initGameData()
 	initCanCastling();
 
 	initPassedPawn();
+	initBout();
 	//printf("清理游戏数据\n");
 }
