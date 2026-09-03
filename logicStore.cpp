@@ -207,6 +207,21 @@ void Data::initCheckmate()
 	checkmate = 0;
 }
 
+void Data::pushPassedPawn(const Cell& out)
+{
+	passedPawn = out;
+}
+
+const Cell& Data::getPassedPawn() const
+{
+	return passedPawn;
+}
+
+void Data::initPassedPawn()
+{
+	passedPawn = Ecell;
+}
+
 void Data::clearIntend()
 {
 	gameIntend = {};
@@ -230,5 +245,7 @@ void Data::initGameData()
 
 	initCheckmate();
 	initCanCastling();
+
+	initPassedPawn();
 	//printf("清理游戏数据\n");
 }

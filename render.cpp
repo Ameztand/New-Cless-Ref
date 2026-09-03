@@ -115,7 +115,10 @@ void Renderer::renderPuGame()
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             if (renderData.logicPiece[j][i]) {
-                solidcircle(PIECE_START_X + PIECE_CELL_SIZE * (i + 0.5), PIECE_START_Y + PIECE_CELL_SIZE * (j + 0.5), 7);
+                int tempDotSize = 5;
+                const Position tempPos = { i,j };
+                if (tempPos == renderData.selectingPos)tempDotSize = 7;
+                solidcircle(PIECE_START_X + PIECE_CELL_SIZE * (i + 0.5), PIECE_START_Y + PIECE_CELL_SIZE * (j + 0.5), tempDotSize);
             }
         }
     }
@@ -225,8 +228,11 @@ void Renderer::renderDebug()
     swprintf(buf, 256, L"王的位置： Wpos:(%d , %d)   Bpos:(%d , %d)", renderData.KingPos[0].x, renderData.KingPos[0].y, renderData.KingPos[1].x, renderData.KingPos[1].y);
     outtextxy(10, 90, buf);
 
-    swprintf(buf, 256, L"被将军的王： %d    被将死的王： %d    是否允许移位WB: %d%d", renderData.KingChecked.id, renderData.checkmate, renderData.CanCastling[0], renderData.CanCastling[1]);
+    swprintf(buf, 256, L"过路兵坐标:（%d,%d）    是否允许移位WB: %d%d", renderData.passedPawn.pos.x, renderData.passedPawn.pos.y, renderData.KingChecked.id, renderData.checkmate);
     outtextxy(10, 110, buf);
+
+    swprintf(buf, 256, L"被将军的王： %d    被将死的王： %d", renderData.KingChecked.id, renderData.checkmate);
+    outtextxy(10, 130, buf);
 
 
     setbkmode(TRANSPARENT);//TRANSPARENT

@@ -37,6 +37,7 @@ private:
 	Piece sumiPiece = {};//模拟位置
 	LogicPiece logicPiece = {};//可移动棋盘
 
+	Cell passedPawn = Ecell;//公用一个
 	std::array<bool, 2>CanCastling = {};//允许王车易位(白黑)
 
 	std::array<Position, 2>KingPos = {};//白/黑王位置
@@ -98,10 +99,15 @@ public:
 	void pushKingChecked(const Cell& out);
 	const Cell& getKingChecked()const;
 	void initKingChecked();
-
+	//将死
 	void pushCheckmate(const int camp);
 	const int getCheckmate()const;
 	void initCheckmate();
+
+	//过路兵
+	void pushPassedPawn(const Cell& out);
+	const Cell& getPassedPawn()const;
+	void initPassedPawn();
 
 	//每帧调用，清理意图
 	void clearIntend();

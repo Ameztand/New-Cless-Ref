@@ -95,6 +95,7 @@ const RenderData& Logic::pushRender()
 	tempRenderData.selectingPos = data.getSelectingPos();
 	tempRenderData.selectingCell = data.getSelectingCell();
 
+	tempRenderData.passedPawn = data.getPassedPawn();
 	tempRenderData.CanCastling = { data.getCanCastling(1), data.getCanCastling(-1) };//´«µÝÁÐ±í
 
 	tempRenderData.KingPos = data.getKingPos();
